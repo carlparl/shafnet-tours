@@ -16,3 +16,4 @@ media/
 Thumbs.db
 .idea/
 .vscode/
+db.sqlite3
