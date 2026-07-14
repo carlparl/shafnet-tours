@@ -14,6 +14,12 @@ services:
         sync: false
       - key: CLOUDINARY_URL
         sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: BOOKING_NOTIFICATION_EMAIL
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: DEBUG
@@ -35,4 +41,4 @@ services:
       - key: SECURE_HSTS_PRELOAD
         value: "True"
       - key: EMAIL_BACKEND
-        value: "django.core.mail.backends.console.EmailBackend"
+        value: "shafnet_tours.email_backend.BrevoAPIEmailBackend"

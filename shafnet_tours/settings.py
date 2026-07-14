@@ -130,9 +130,18 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 # ===================== EMAIL =====================
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
+BREVO_API_URL = "https://api.brevo.com/v3/smtp/email"
+BREVO_TIMEOUT = int(os.getenv("BREVO_TIMEOUT", "15"))
+
+default_email_backend = (
+    "shafnet_tours.email_backend.BrevoAPIEmailBackend"
+    if BREVO_API_KEY
+    else "django.core.mail.backends.console.EmailBackend"
+)
 EMAIL_BACKEND = os.getenv(
     "EMAIL_BACKEND",
-    "django.core.mail.backends.console.EmailBackend",
+    default_email_backend,
 )
 EMAIL_HOST = os.getenv("EMAIL_HOST", "")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
