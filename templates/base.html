@@ -1,133 +1,153 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <title>{% block title %}Shafnet Tours{% endblock %}</title>
+    <meta name="theme-color" content="#064e2b">
+    <meta name="description" content="{% block meta_description %}Explore thoughtfully planned Uganda tours, safaris and local getaways with Shafnet Tours & Travel Ltd.{% endblock %}">
+    <title>{% block title %}Shafnet Tours & Travel Ltd{% endblock %}</title>
+    <link rel="icon" href="{% static 'logo.png' %}" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-    .hero-bg {
-        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.42)), 
-                          url('https://images.unsplash.com/photo-1516426122078-c23e76319801');
-        background-size: cover;
-        background-position: center;
-    }
-    .tour-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .tour-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 25px -8px rgb(0 0 0 / 0.1);
-    }
-</style>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
-<body class="bg-[#f8fafc] font-sans">
-    <!-- Navbar -->
-<nav class="bg-white border-b sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6">
-        <div class="flex justify-between items-center h-20">
-            
-            <!-- Logo -->
-            <a href="{% url 'home' %}" class="flex items-center gap-x-3">
-                <img src="{% static 'logo.png' %}" 
-                     alt="Shafnet Tours" 
-                     class="h-12 w-auto">
-                <div class="hidden md:block">
-                    <span class="block text-xs text-gray-500 tracking-widest leading-none">
-                        feel your life with adventure!
-                    </span>
-                </div>
-            </a>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
 
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center gap-x-7 text-sm font-medium">
-                <a href="{% url 'home' %}" class="text-gray-700 hover:text-green-700 transition">Home</a>
-                <a href="{% url 'tour_list' %}" class="text-gray-700 hover:text-green-700 transition">Tours</a>
-                <a href="{% url 'gallery' %}" class="text-gray-700 hover:text-green-700 transition">Gallery</a>
-                <a href="{% url 'about' %}" class="text-gray-700 hover:text-green-700 transition">About</a>
-                <a href="{% url 'contact' %}" class="text-gray-700 hover:text-green-700 transition">Contact</a>
-            </div>
-
-            <!-- CTA Button -->
-            <div class="hidden md:block">
-                <a href="{% url 'tour_list' %}" 
-                   class="px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold rounded-full transition">
-                    Explore Tours
+    <div class="hidden bg-green-950 text-green-100 md:block">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-2 text-xs">
+            <p class="flex items-center gap-2">
+                <i class="fa-solid fa-location-dot text-green-400" aria-hidden="true"></i>
+                Kampala, Uganda
+            </p>
+            <div class="flex items-center gap-6">
+                <a href="tel:+256778221069" class="transition hover:text-white">
+                    <i class="fa-solid fa-phone mr-1.5 text-green-400" aria-hidden="true"></i>
+                    +256 778 221 069
+                </a>
+                <a href="mailto:info@shafnettours.com" class="transition hover:text-white">
+                    <i class="fa-regular fa-envelope mr-1.5 text-green-400" aria-hidden="true"></i>
+                    info@shafnettours.com
                 </a>
             </div>
-
-            <!-- Mobile Menu Button -->
-            <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700">
-                <i class="fa-solid fa-bars text-xl"></i>
-            </button>
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden md:hidden border-t bg-white px-6 py-3">
-        <div class="flex flex-col gap-y-3 text-sm font-medium">
-            <a href="{% url 'home' %}" class="text-gray-700">Home</a>
-            <a href="{% url 'tour_list' %}" class="text-gray-700">Tours</a>
-            <a href="{% url 'gallery' %}" class="text-gray-700">Gallery</a>
-            <a href="{% url 'about' %}" class="text-gray-700">About</a>
-            <a href="{% url 'contact' %}" class="text-gray-700">Contact</a>
-            <a href="{% url 'tour_list' %}" class="mt-2 px-5 py-2.5 bg-green-700 text-white rounded-full text-center text-sm">Explore Tours</a>
-        </div>
-    </div>
-</nav>
+    <header class="site-nav sticky top-0 z-50">
+        <nav class="mx-auto max-w-7xl px-4 sm:px-6" aria-label="Main navigation">
+            <div class="flex h-[76px] items-center justify-between gap-5">
+                <a href="{% url 'home' %}" class="shrink-0" aria-label="Shafnet Tours home">
+                    <img src="{% static 'logo.png' %}" alt="Shafnet Tours & Travel Ltd" class="brand-logo">
+                </a>
 
-    {% block content %}{% endblock %}
+                <div class="hidden items-center gap-1 text-sm md:flex">
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}>Home</a>
+                    <a href="{% url 'tour_list' %}" class="nav-link {% if request.resolver_match.url_name == 'tour_list' or request.resolver_match.url_name == 'tour_detail' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'tour_list' or request.resolver_match.url_name == 'tour_detail' %}aria-current="page"{% endif %}>Tours</a>
+                    <a href="{% url 'gallery' %}" class="nav-link {% if request.resolver_match.url_name == 'gallery' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'gallery' %}aria-current="page"{% endif %}>Gallery</a>
+                    <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'about' %}aria-current="page"{% endif %}>About</a>
+                    <a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}is-active{% endif %}" {% if request.resolver_match.url_name == 'contact' %}aria-current="page"{% endif %}>Contact</a>
+                </div>
 
-    <!-- Footer -->
-<footer class="bg-green-900 text-green-200 py-10">
-    <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-y-8 text-sm">
-        
-        <!-- Logo + Tagline -->
-        <div>
-            <a href="{% url 'home' %}">
-                <img src="{% static 'logo.png' %}" alt="Shafnet Tours" class="h-11 w-auto mb-2">
-            </a>
-            <p class="text-green-300 text-sm italic">"feel your life with adventure!"</p>
-        </div>
+                <div class="hidden md:block">
+                    <a href="{% url 'contact' %}" class="btn-primary">Plan your trip <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i></a>
+                </div>
 
-        <!-- Quick Links -->
-        <div>
-            <h4 class="font-semibold text-white mb-2">Quick Links</h4>
-            <div class="space-y-1.5">
-                <a href="{% url 'home' %}" class="block hover:text-white">Home</a>
-                <a href="{% url 'tour_list' %}" class="block hover:text-white">All Tours</a>
-                <a href="{% url 'gallery' %}" class="block hover:text-white">Gallery</a>
-                <a href="{% url 'about' %}" class="block hover:text-white">About Us</a>
+                <button id="mobile-menu-button" type="button" class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-green-100 bg-green-50 text-green-900 md:hidden" aria-controls="mobile-menu" aria-expanded="false" aria-label="Open menu">
+                    <i id="mobile-menu-icon" class="fa-solid fa-bars text-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <div id="mobile-menu" class="hidden border-t border-green-100 pb-5 pt-3 md:hidden">
+                <div class="flex flex-col gap-1 text-sm">
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">Home</a>
+                    <a href="{% url 'tour_list' %}" class="nav-link {% if request.resolver_match.url_name == 'tour_list' or request.resolver_match.url_name == 'tour_detail' %}is-active{% endif %}">Tours</a>
+                    <a href="{% url 'gallery' %}" class="nav-link {% if request.resolver_match.url_name == 'gallery' %}is-active{% endif %}">Gallery</a>
+                    <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}is-active{% endif %}">About</a>
+                    <a href="{% url 'contact' %}" class="nav-link {% if request.resolver_match.url_name == 'contact' %}is-active{% endif %}">Contact</a>
+                    <a href="{% url 'contact' %}" class="btn-primary mt-3">Plan your trip</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-green-950 text-green-100">
+        <div class="mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="sm:col-span-2 lg:col-span-1">
+                <div class="inline-block rounded-2xl bg-white p-3">
+                    <img src="{% static 'logo.png' %}" alt="Shafnet Tours & Travel Ltd" class="h-12 w-auto">
+                </div>
+                <p class="mt-4 max-w-xs text-sm leading-6 text-green-200">Thoughtfully planned tours and safaris, guided by people who know Uganda.</p>
+            </div>
+
+            <div>
+                <h2 class="text-sm font-bold text-white">Explore</h2>
+                <div class="mt-4 space-y-3 text-sm text-green-200">
+                    <a href="{% url 'tour_list' %}" class="block transition hover:text-white">Tours & safaris</a>
+                    <a href="{% url 'gallery' %}" class="block transition hover:text-white">Travel gallery</a>
+                    <a href="{% url 'about' %}" class="block transition hover:text-white">About Shafnet</a>
+                    <a href="{% url 'contact' %}" class="block transition hover:text-white">Plan a trip</a>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-sm font-bold text-white">Contact</h2>
+                <div class="mt-4 space-y-3 text-sm leading-6 text-green-200">
+                    <p><i class="fa-solid fa-location-dot mr-2 w-4 text-green-400" aria-hidden="true"></i>Kampala, Uganda</p>
+                    <a href="tel:+256778221069" class="block transition hover:text-white"><i class="fa-solid fa-phone mr-2 w-4 text-green-400" aria-hidden="true"></i>+256 778 221 069</a>
+                    <a href="mailto:info@shafnettours.com" class="block break-all transition hover:text-white"><i class="fa-regular fa-envelope mr-2 w-4 text-green-400" aria-hidden="true"></i>info@shafnettours.com</a>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-sm font-bold text-white">Start your journey</h2>
+                <p class="mt-4 text-sm leading-6 text-green-200">Tell us where you want to go and we’ll help shape the details.</p>
+                <a href="{% url 'contact' %}" class="btn-light mt-5">Contact our team</a>
             </div>
         </div>
 
-        <!-- Contact -->
-        <div>
-            <h4 class="font-semibold text-white mb-2">Contact Us</h4>
-            <p class="mb-0.5">Kampala, Uganda</p>
-            <p class="mb-0.5">+256 700 000 000</p>
-            <p>info@shafnettours.com</p>
+        <div class="border-t border-white/10">
+            <div class="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-5 text-xs text-green-300 sm:flex-row sm:items-center sm:justify-between">
+                <p>© {% now "Y" %} Shafnet Tours & Travel Ltd. All rights reserved.</p>
+                <p>Feel your life with adventure.</p>
+            </div>
         </div>
-    </div>
+    </footer>
 
-    <div class="text-center text-xs text-green-400 mt-10">
-        © {% now "Y" %} Shafnet Tours & Travels Ltd. All rights reserved.
-    </div>
-</footer>
+    <a href="https://wa.me/256778221069?text=Hi%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip."
+       target="_blank"
+       rel="noopener noreferrer"
+       class="whatsapp-float fixed bottom-5 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-white transition hover:-translate-y-1 hover:bg-green-700"
+       aria-label="Chat with Shafnet Tours on WhatsApp">
+        <i class="fa-brands fa-whatsapp text-3xl" aria-hidden="true"></i>
+    </a>
 
     <script>
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-    </script>
+        (() => {
+            const button = document.getElementById('mobile-menu-button');
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('mobile-menu-icon');
 
-<!-- Floating WhatsApp Button -->
-<a href="https://wa.me/256778221069?text=Hi%20Shafnet%20Tours,%20I%20would%20like%20to%20inquire%20about%20your%20tours."
-   target="_blank"
-   class="fixed bottom-6 right-6 z-50 bg-green-600 hover:bg-green-700 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition">
-    <i class="fa-brands fa-whatsapp text-3xl"></i>
-</a>
+            if (!button || !menu || !icon) return;
+
+            const setMenu = (open) => {
+                menu.classList.toggle('hidden', !open);
+                button.setAttribute('aria-expanded', String(open));
+                button.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+                icon.classList.toggle('fa-bars', !open);
+                icon.classList.toggle('fa-xmark', open);
+            };
+
+            button.addEventListener('click', () => setMenu(button.getAttribute('aria-expanded') !== 'true'));
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') setMenu(false);
+            });
+            menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+        })();
+    </script>
 </body>
 </html>

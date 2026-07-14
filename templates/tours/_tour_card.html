@@ -1,0 +1,39 @@
+<article class="tour-card group flex h-full flex-col overflow-hidden rounded-3xl bg-white">
+    <a href="{% url 'tour_detail' tour.slug %}" class="relative block overflow-hidden" aria-label="View {{ tour.title }}">
+        {% if tour.image %}
+            <img src="{{ tour.image.url }}" class="image-zoom h-56 w-full object-cover" alt="{{ tour.title }}" loading="lazy">
+        {% else %}
+            <div class="flex h-56 w-full items-center justify-center bg-gradient-to-br from-green-100 to-emerald-50 text-green-700">
+                <i class="fa-solid fa-mountain-sun text-4xl" aria-hidden="true"></i>
+            </div>
+        {% endif %}
+        <span class="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-green-800 shadow-sm backdrop-blur">
+            {% if tour.target_audience == 'domestic' %}Local getaway{% else %}{{ tour.get_region_display|default:"Uganda safari" }}{% endif %}
+        </span>
+    </a>
+
+    <div class="flex flex-1 flex-col p-5">
+        <div class="mb-3 flex items-center gap-4 text-xs font-medium text-gray-500">
+            <span><i class="fa-solid fa-location-dot mr-1.5 text-green-600" aria-hidden="true"></i>{{ tour.location }}</span>
+            <span class="ml-auto whitespace-nowrap"><i class="fa-regular fa-clock mr-1.5 text-green-600" aria-hidden="true"></i>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</span>
+        </div>
+        <h3 class="text-xl font-bold leading-snug text-gray-950">
+            <a href="{% url 'tour_detail' tour.slug %}" class="transition hover:text-green-800">{{ tour.title }}</a>
+        </h3>
+        <p class="mt-2 line-clamp-2 flex-1 text-sm leading-6 text-gray-600">{{ tour.description|truncatewords:20 }}</p>
+
+        <div class="mt-5 flex items-end justify-between gap-4 border-t border-green-100 pt-4">
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-wider text-gray-400">{% if tour.price %}From{% else %}Pricing{% endif %}</p>
+                {% if tour.price %}
+                    <p class="text-lg font-extrabold text-green-900">${{ tour.price|floatformat:0 }} <span class="text-xs font-normal text-gray-500">/ person</span></p>
+                {% else %}
+                    <p class="text-sm font-semibold text-green-900">On request</p>
+                {% endif %}
+            </div>
+            <a href="{% url 'tour_detail' tour.slug %}" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-700 text-white transition hover:bg-green-800" aria-label="View details for {{ tour.title }}">
+                <i class="fa-solid fa-arrow-right text-sm" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</article>

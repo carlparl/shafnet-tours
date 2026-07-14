@@ -1,40 +1,90 @@
 {% extends 'base.html' %}
 
 {% block title %}About Us | Shafnet Tours{% endblock %}
+{% block meta_description %}Learn about Shafnet Tours, a Uganda-based travel company creating thoughtful local getaways and safari experiences.{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-6 py-12">
-    <div class="max-w-2xl mx-auto text-center mb-10">
-        <span class="text-green-700 font-semibold text-sm tracking-widest">OUR STORY</span>
-        <h1 class="text-3xl font-bold mt-1">About Shafnet Tours</h1>
-        <p class="text-gray-600 mt-3">Creating meaningful travel experiences across Uganda since 2018.</p>
+<section class="page-hero text-white">
+    <div class="relative z-10 mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-green-300">Our story</p>
+        <h1 class="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight md:text-6xl">Travel planned with care, curiosity and local insight.</h1>
+        <p class="mt-5 max-w-2xl text-lg leading-8 text-green-100">Shafnet Tours helps travellers experience Uganda with more confidence and deeper connection.</p>
     </div>
+</section>
 
-    <div class="grid md:grid-cols-2 gap-8">
+<div class="mx-auto max-w-7xl px-6 py-16 md:py-20">
+    <section class="grid items-center gap-12 lg:grid-cols-2">
         <div>
-            <h2 class="text-xl font-semibold mb-3">Who We Are</h2>
-            <div class="space-y-3 text-gray-700 text-[15px]">
-                <p>Shafnet Tours & Travels Ltd is a proudly Ugandan company based in Kampala. We specialize in both domestic getaways and international safaris across Uganda’s most beautiful destinations.</p>
-                <p>Whether you're looking for a relaxing weekend on the Ssese Islands or an unforgettable gorilla trek in Bwindi, we handle every detail with care, professionalism, and local expertise.</p>
+            <p class="eyebrow">Who we are</p>
+            <h2 class="display-title mt-2 text-3xl md:text-4xl">Proudly Ugandan. Personally attentive.</h2>
+            <div class="prose-copy mt-6 text-[15px] leading-8 text-gray-700">
+                <p>Shafnet Tours & Travel Ltd is a Kampala-based travel company creating local getaways and safari experiences across Uganda. Since 2018, our focus has been simple: understand each traveller, plan the details carefully and make the journey feel effortless.</p>
+                <p>Whether you are considering a quiet weekend on the Ssese Islands, a wildlife safari or a gorilla-trekking experience in Bwindi, we help shape a trip that suits your time, interests and pace.</p>
+            </div>
+            <a href="{% url 'contact' %}" class="btn-primary mt-7">Plan with our team</a>
+        </div>
+
+        <div class="relative">
+            <div class="overflow-hidden rounded-[2rem]">
+                <img src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=1200&q=86" alt="Green Ugandan landscape" class="h-[430px] w-full object-cover" loading="lazy">
+            </div>
+            <div class="absolute -bottom-6 -left-4 max-w-xs rounded-3xl border border-green-100 bg-white p-5 shadow-xl md:-left-8">
+                <div class="flex items-center gap-4">
+                    <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-800"><i class="fa-solid fa-earth-africa text-xl" aria-hidden="true"></i></span>
+                    <p class="text-sm leading-6 text-gray-700"><strong class="block text-base text-green-950">Rooted in Uganda</strong>Local knowledge behind every route.</p>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="bg-green-50 rounded-2xl p-6">
-            <h3 class="font-semibold mb-3">What Makes Us Different</h3>
-            <ul class="space-y-2.5 text-sm text-gray-700">
-                <li class="flex gap-x-2"><i class="fa-solid fa-check text-green-700 mt-1"></i> Deep local knowledge of Uganda</li>
-                <li class="flex gap-x-2"><i class="fa-solid fa-check text-green-700 mt-1"></i> Personalized and flexible itineraries</li>
-                <li class="flex gap-x-2"><i class="fa-solid fa-check text-green-700 mt-1"></i> Professional guides and reliable vehicles</li>
-                <li class="flex gap-x-2"><i class="fa-solid fa-check text-green-700 mt-1"></i> Strong focus on safety and guest experience</li>
-                <li class="flex gap-x-2"><i class="fa-solid fa-check text-green-700 mt-1"></i> Transparent pricing with no hidden costs</li>
+    <section class="mt-24 md:mt-28">
+        <div class="mx-auto max-w-2xl text-center">
+            <p class="eyebrow">What guides us</p>
+            <h2 class="display-title mt-2 text-3xl md:text-4xl">The details make the difference</h2>
+            <p class="mt-4 leading-7 text-gray-600">Our approach balances reliable planning with the flexibility and warmth that make travel memorable.</p>
+        </div>
+
+        <div class="mt-10 grid gap-6 md:grid-cols-3">
+            <article class="content-card rounded-3xl bg-white p-7">
+                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-800"><i class="fa-solid fa-compass text-xl" aria-hidden="true"></i></span>
+                <h3 class="mt-5 text-xl font-bold">Local expertise</h3>
+                <p class="mt-3 text-sm leading-6 text-gray-600">Practical recommendations informed by real knowledge of Uganda’s destinations and routes.</p>
+            </article>
+            <article class="content-card rounded-3xl bg-white p-7">
+                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-800"><i class="fa-solid fa-fingerprint text-xl" aria-hidden="true"></i></span>
+                <h3 class="mt-5 text-xl font-bold">Personal planning</h3>
+                <p class="mt-3 text-sm leading-6 text-gray-600">Itineraries shaped around your group, schedule, interests and preferred travel style.</p>
+            </article>
+            <article class="content-card rounded-3xl bg-white p-7">
+                <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-800"><i class="fa-solid fa-handshake text-xl" aria-hidden="true"></i></span>
+                <h3 class="mt-5 text-xl font-bold">Clear service</h3>
+                <p class="mt-3 text-sm leading-6 text-gray-600">Straightforward communication, helpful support and careful attention from enquiry to return.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="mt-16 grid overflow-hidden rounded-[2rem] bg-green-950 text-white lg:grid-cols-2">
+        <div class="p-8 md:p-12">
+            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-green-400">Why choose Shafnet</p>
+            <h2 class="mt-3 text-3xl font-extrabold tracking-tight">A capable team, a flexible plan and a journey that feels like yours.</h2>
+            <ul class="mt-7 space-y-4 text-sm text-green-100">
+                <li class="flex gap-3"><i class="fa-solid fa-circle-check mt-1 text-green-400" aria-hidden="true"></i>Deep local knowledge of Uganda</li>
+                <li class="flex gap-3"><i class="fa-solid fa-circle-check mt-1 text-green-400" aria-hidden="true"></i>Personalised and flexible itineraries</li>
+                <li class="flex gap-3"><i class="fa-solid fa-circle-check mt-1 text-green-400" aria-hidden="true"></i>Professional guides and reliable transport</li>
+                <li class="flex gap-3"><i class="fa-solid fa-circle-check mt-1 text-green-400" aria-hidden="true"></i>Transparent information and attentive support</li>
             </ul>
         </div>
-    </div>
+        <div class="min-h-[340px] bg-[url('https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=1200&q=85')] bg-cover bg-center" role="img" aria-label="Wildlife on safari in Uganda"></div>
+    </section>
 
-    <div class="mt-10 text-center bg-green-900 text-white rounded-2xl py-8 px-6">
-        <h2 class="text-xl font-semibold mb-2">Ready to explore Uganda?</h2>
-        <p class="text-green-200 mb-5 text-sm">Let us help you plan your next adventure.</p>
-        <a href="{% url 'tour_list' %}" class="inline-block px-6 py-2.5 bg-white text-green-800 font-medium rounded-full hover:bg-gray-100 transition">Browse All Tours</a>
-    </div>
+    <section class="mt-16 text-center">
+        <p class="eyebrow">Start a conversation</p>
+        <h2 class="display-title mt-2 text-3xl md:text-4xl">Ready to experience Uganda?</h2>
+        <p class="mx-auto mt-4 max-w-xl leading-7 text-gray-600">Browse our current tours or tell us what kind of journey you want to create.</p>
+        <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+            <a href="{% url 'tour_list' %}" class="btn-secondary">Browse tours</a>
+            <a href="{% url 'contact' %}" class="btn-primary">Plan your trip</a>
+        </div>
+    </section>
 </div>
 {% endblock %}
