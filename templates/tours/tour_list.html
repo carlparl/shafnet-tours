@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}All Tours | Shafnet Tours{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <div>
+            <span class="text-green-700 font-semibold text-sm tracking-widest">EXPLORE UGANDA</span>
+            <h1 class="text-3xl font-bold text-gray-900">All Tours & Safaris</h1>
+        </div>
+        <a href="{% url 'home' %}" class="text-sm text-green-700 hover:text-green-800 mt-1 md:mt-0">← Back to Home</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white border rounded-2xl p-4 mb-6">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
+            <span class="text-sm text-gray-500 mr-1">Filter:</span>
+            
+            <a href="{% url 'tour_list' %}" class="px-4 py-1 text-sm rounded-full border {% if not current_audience %}bg-green-700 text-white{% else %}hover:bg-gray-100{% endif %}">All</a>
+            <a href="?audience=domestic" class="px-4 py-1 text-sm rounded-full border {% if current_audience == 'domestic' %}bg-green-700 text-white{% else %}hover:bg-gray-100{% endif %}">Domestic</a>
+            <a href="?audience=international" class="px-4 py-1 text-sm rounded-full border {% if current_audience == 'international' %}bg-green-700 text-white{% else %}hover:bg-gray-100{% endif %}">International</a>
+
+            {% if current_audience == 'international' %}
+                <div class="flex gap-1.5 ml-2 pl-3 border-l">
+                    <a href="?audience=international&region=western" class="px-3 py-1 text-xs rounded-full {% if current_region == 'western' %}bg-green-700 text-white{% else %}bg-green-100 text-green-700{% endif %}">Western</a>
+                    <a href="?audience=international&region=northern" class="px-3 py-1 text-xs rounded-full {% if current_region == 'northern' %}bg-green-700 text-white{% else %}bg-green-100 text-green-700{% endif %}">Northern</a>
+                    <a href="?audience=international&region=eastern" class="px-3 py-1 text-xs rounded-full {% if current_region == 'eastern' %}bg-green-700 text-white{% else %}bg-green-100 text-green-700{% endif %}">Eastern</a>
+                    <a href="?audience=international&region=central" class="px-3 py-1 text-xs rounded-full {% if current_region == 'central' %}bg-green-700 text-white{% else %}bg-green-100 text-green-700{% endif %}">Central</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tours Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {% for tour in tours %}
+        <div class="tour-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm flex flex-col">
+            {% if tour.image %}
+                <img src="{{ tour.image.url }}" class="w-full h-44 object-cover" alt="{{ tour.title }}">
+            {% else %}
+                <div class="w-full h-44 bg-gray-200 flex items-center justify-center"><i class="fa-solid fa-image text-3xl text-gray-400"></i></div>
+            {% endif %}
+
+            <div class="p-4 flex flex-col flex-1">
+                <div class="flex items-center gap-x-2 mb-2">
+                    {% if tour.target_audience == 'domestic' %}
+                        <span class="text-xs px-3 py-0.5 bg-green-100 text-green-700 rounded-full">Domestic</span>
+                    {% else %}
+                        <span class="text-xs px-3 py-0.5 bg-amber-100 text-amber-700 rounded-full">{{ tour.get_region_display|default:"International" }}</span>
+                    {% endif %}
+                    <span class="text-xs text-gray-500 ml-auto">{{ tour.duration_days }} days</span>
+                </div>
+
+                <h3 class="font-semibold text-lg leading-tight mb-1">{{ tour.title }}</h3>
+                <p class="text-sm text-gray-500 mb-2">{{ tour.location }}</p>
+                <p class="text-sm text-gray-600 line-clamp-2 flex-1">{{ tour.description|truncatewords:16 }}</p>
+
+                <div class="mt-4 flex items-center justify-between">
+                    {% if tour.price %}
+                        <span class="font-semibold">${{ tour.price }}</span>
+                    {% else %}
+                        <span class="text-xs text-gray-400">Price on request</span>
+                    {% endif %}
+                    <a href="{% url 'tour_detail' tour.slug %}" class="px-4 py-1.5 text-sm bg-green-700 hover:bg-green-800 text-white rounded-full transition">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-3 text-center py-8">
+            <p class="text-gray-500">No tours found with current filters.</p>
+            <a href="{% url 'tour_list' %}" class="text-green-700 text-sm hover:underline">Clear filters</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

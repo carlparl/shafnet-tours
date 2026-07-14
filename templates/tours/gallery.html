@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Gallery | Shafnet Tours{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="text-center mb-10">
+        <span class="text-green-700 font-semibold text-sm tracking-widest">EXPLORE UGANDA</span>
+        <h1 class="text-3xl font-bold mt-1">Our Gallery</h1>
+        <p class="text-gray-600 mt-2 max-w-md mx-auto">Moments captured from our tours across Uganda’s most beautiful destinations.</p>
+    </div>
+
+    {% if images %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {% for img in images %}
+        <div class="overflow-hidden rounded-2xl shadow-sm border border-gray-100 group">
+            <img src="{{ img.image.url }}" 
+                 class="w-full h-64 object-cover group-hover:scale-105 transition duration-300" 
+                 alt="{{ img.title|default:'Uganda Tour' }}">
+            {% if img.caption or img.title %}
+            <div class="p-3 bg-white">
+                {% if img.title %}
+                    <h3 class="font-medium text-sm">{{ img.title }}</h3>
+                {% endif %}
+                {% if img.caption %}
+                    <p class="text-xs text-gray-500 mt-0.5">{{ img.caption }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12">
+        <p class="text-gray-500">No images in the gallery yet.</p>
+        <p class="text-sm text-gray-400 mt-1">Add images from the admin panel.</p>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-10">
+        <p class="text-gray-600 text-sm">Want to experience these places yourself?</p>
+        <a href="{% url 'tour_list' %}" 
+           class="inline-block mt-3 px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-full text-sm font-medium transition">
+            Browse Our Tours
+        </a>
+    </div>
+</div>
+{% endblock %}
