@@ -12,7 +12,7 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false
-      - key: SECRET_KEY
+      - key: postgresql://neondb_owner:npg_bwEeBvH3D1Vo@ep-gentle-field-ast7bfd1-pooler.c-4.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
         generateValue: true
       - key: DEBUG
         value: "False"
