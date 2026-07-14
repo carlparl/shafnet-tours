@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Request Received | Shafnet Tours{% endblock %}
+{% block meta_description %}Your Shafnet Tours booking request has been received successfully.{% endblock %}
+
+{% block content %}
+<section class="confirmation-section">
+    <div class="container confirmation-wrap">
+        <div class="confirmation-card">
+            <div class="confirmation-mark" aria-hidden="true">✓</div>
+            <p class="eyebrow">Request received</p>
+            <h1>Thank you, {{ booking.full_name }}.</h1>
+            <p class="confirmation-intro">Your booking request has been saved successfully. Our team will review the details and contact you before the trip is confirmed.</p>
+
+            <div class="confirmation-notice">
+                <strong>Booking reference ST-{{ booking.pk|stringformat:"05d" }}</strong>
+                <span>A confirmation email has been prepared for {{ booking.email }}.</span>
+            </div>
+
+            <div class="confirmation-summary">
+                <h2>Request summary</h2>
+                <dl>
+                    <div><dt>Tour</dt><dd>{{ booking.tour.title }}</dd></div>
+                    <div><dt>Travellers</dt><dd>{{ booking.number_of_people }}</dd></div>
+                    <div><dt>Preferred date</dt><dd>{{ booking.preferred_date|default:"Not specified" }}</dd></div>
+                    <div><dt>Email</dt><dd>{{ booking.email }}</dd></div>
+                    <div><dt>Phone</dt><dd>{{ booking.phone }}</dd></div>
+                    <div><dt>Status</dt><dd><span class="status-pill">Pending review</span></dd></div>
+                </dl>
+            </div>
+
+            <div class="confirmation-next">
+                <h2>What happens next?</h2>
+                <ol>
+                    <li><span>1</span><p>Our team reviews your dates and trip requirements.</p></li>
+                    <li><span>2</span><p>We contact you to confirm availability and final pricing.</p></li>
+                    <li><span>3</span><p>Your booking is confirmed only after you approve the final plan.</p></li>
+                </ol>
+            </div>
+
+            <div class="confirmation-actions">
+                <a class="button button-primary" href="https://wa.me/256778221069?text=Hello%20Shafnet%20Tours%2C%20I%20submitted%20booking%20ST-{{ booking.pk|stringformat:'05d' }}%20for%20{{ booking.tour.title|urlencode }}.%20My%20name%20is%20{{ booking.full_name|urlencode }}." target="_blank" rel="noopener noreferrer">Continue on WhatsApp</a>
+                <a class="button button-secondary" href="{% url 'home' %}">Return to homepage</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

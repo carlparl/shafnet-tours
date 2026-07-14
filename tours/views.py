@@ -1,135 +1,161 @@
 import logging
 
 from django.conf import settings
-from django.contrib import messages
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import BookingForm, ContactForm
-from .models import Destination, GalleryImage, Testimonial, Tour
+from .forms import BookingForm
+from .models import Booking, Destination, Testimonial, Tour
 
 
 logger = logging.getLogger(__name__)
 
 
-def _send_admin_email(subject, message):
-    """Notify the team without making a successful form submission fail."""
+def _send_booking_emails(booking):
+    """Send booking notifications without risking the saved booking."""
+    preferred_date = booking.preferred_date or "Not specified"
+    message = booking.message or "Not provided"
+
+    admin_message = (
+        "A new booking request was submitted.\n\n"
+        f"Booking reference: ST-{booking.pk:05d}\n"
+        f"Tour: {booking.tour.title}\n"
+        f"Customer: {booking.full_name}\n"
+        f"Email: {booking.email}\n"
+        f"Phone: {booking.phone}\n"
+        f"Travellers: {booking.number_of_people}\n"
+        f"Preferred date: {preferred_date}\n"
+        f"Message: {message}\n"
+        f"Status: {booking.get_status_display()}"
+    )
+
+    customer_message = (
+        f"Hello {booking.full_name},\n\n"
+        "Thank you for contacting Shafnet Tours & Travel. "
+        f"We received your request for {booking.tour.title}.\n\n"
+        f"Travellers: {booking.number_of_people}\n"
+        f"Preferred date: {preferred_date}\n\n"
+        "Our team will review availability and contact you with the final "
+        "itinerary, pricing and next steps. Your request is not confirmed "
+        "until you approve the final plan.\n\n"
+        "Shafnet Tours & Travel Ltd\n"
+        "+256 778 221 069"
+    )
+
     try:
         send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [settings.BOOKING_NOTIFICATION_EMAIL],
+            subject=f"New booking request: {booking.tour.title}",
+            message=admin_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.BOOKING_NOTIFICATION_EMAIL],
+            fail_silently=False,
+        )
+        send_mail(
+            subject="We received your Shafnet Tours booking request",
+            message=customer_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[booking.email],
             fail_silently=False,
         )
     except Exception:
-        logger.exception("Could not send Shafnet Tours enquiry notification")
+        logger.exception(
+            "Booking %s was saved, but its email notification failed",
+            booking.pk,
+        )
 
 
 def home(request):
-    domestic_tours = Tour.objects.filter(target_audience='domestic', is_featured=True)[:3]
-    international_tours = Tour.objects.filter(target_audience='international', is_featured=True)[:3]
-    testimonials = Testimonial.objects.filter(is_active=True)[:6]
-    destinations = Destination.objects.filter(is_active=True)[:8]
-
     context = {
-        'domestic_tours': domestic_tours,
-        'international_tours': international_tours,
-        'testimonials': testimonials,
-        'destinations': destinations,
+        "domestic_tours": Tour.objects.filter(
+            target_audience="domestic",
+            is_featured=True,
+        )[:3],
+        "safari_tours": Tour.objects.filter(
+            target_audience="international",
+            is_featured=True,
+        )[:3],
+        "destinations": Destination.objects.filter(is_active=True)[:4],
+        "testimonials": Testimonial.objects.filter(is_active=True)[:3],
     }
-    return render(request, 'tours/home.html', context)
+    return render(request, "tours/home.html", context)
 
 
-def tour_list(request):
-    tours = Tour.objects.all()
-
-    audience = request.GET.get('audience')
-    region = request.GET.get('region')
-    valid_audiences = {value for value, _ in Tour.AUDIENCE_CHOICES}
-    valid_regions = {value for value, _ in Tour.REGION_CHOICES}
-
-    if audience not in valid_audiences:
-        audience = None
-    if region not in valid_regions or audience != 'international':
-        region = None
-
-    if audience:
-        tours = tours.filter(target_audience=audience)
-
-    if region:
-        tours = tours.filter(region=region)
-
+def domestic_tours(request):
     context = {
-        'tours': tours,
-        'current_audience': audience,
-        'current_region': region,
+        "tours": Tour.objects.filter(target_audience="domestic"),
+        "page_type": "domestic",
+        "page_label": "Explore Uganda locally",
+        "page_title": "Domestic tours for refreshing escapes",
+        "page_intro": (
+            "Discover weekend getaways, group adventures and memorable trips "
+            "designed for travellers exploring more of Uganda."
+        ),
     }
-    return render(request, 'tours/tour_list.html', context)
+    return render(request, "tours/tour_list.html", context)
+
+
+def safaris(request):
+    context = {
+        "tours": Tour.objects.filter(target_audience="international"),
+        "page_type": "safari",
+        "page_label": "Discover the Pearl of Africa",
+        "page_title": "Uganda safaris shaped around you",
+        "page_intro": (
+            "Explore wildlife, landscapes and local experiences through safari "
+            "routes planned with care and local insight."
+        ),
+    }
+    return render(request, "tours/tour_list.html", context)
 
 
 def tour_detail(request, slug):
-    tour = get_object_or_404(Tour.objects.prefetch_related('itineraries'), slug=slug)
+    tour = get_object_or_404(
+        Tour.objects.prefetch_related("itineraries"),
+        slug=slug,
+    )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
             booking = form.save(commit=False)
             booking.tour = tour
             booking.save()
-
-            subject = f"New Booking Request: {tour.title}"
-            email_message = (
-                "New booking request received.\n\n"
-                f"Tour: {tour.title}\n"
-                f"Name: {booking.full_name}\n"
-                f"Email: {booking.email}\n"
-                f"Phone: {booking.phone}\n"
-                f"Number of people: {booking.number_of_people}\n"
-                f"Preferred date: {booking.preferred_date or 'Not provided'}\n"
-                f"Message: {booking.message or 'Not provided'}"
-            )
-            _send_admin_email(subject, email_message)
-
-            messages.success(request, "Thank you! Your booking request has been received. We'll contact you shortly.")
-            return redirect('tour_detail', slug=tour.slug)
+            _send_booking_emails(booking)
+            request.session["latest_booking_id"] = booking.pk
+            return redirect("booking_confirmation")
     else:
         form = BookingForm()
 
-    context = {
-        'tour': tour,
-        'form': form,
-    }
-    return render(request, 'tours/tour_detail.html', context)
+    return render(
+        request,
+        "tours/tour_detail.html",
+        {"tour": tour, "form": form},
+    )
 
 
-def about(request):
-    return render(request, 'tours/about.html')
+def booking_confirmation(request):
+    booking_id = request.session.get("latest_booking_id")
+    if not booking_id:
+        return redirect("home")
+
+    booking = get_object_or_404(
+        Booking.objects.select_related("tour"),
+        pk=booking_id,
+    )
+    return render(
+        request,
+        "tours/booking_confirmation.html",
+        {"booking": booking},
+    )
 
 
-def gallery(request):
-    images = GalleryImage.objects.all()
-    context = {'images': images}
-    return render(request, 'tours/gallery.html', context)
-
-
-def contact(request):
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            contact_message = form.save()
-            subject = contact_message.subject or 'Website enquiry'
-            email_message = (
-                "New website enquiry received.\n\n"
-                f"Name: {contact_message.full_name}\n"
-                f"Email: {contact_message.email}\n"
-                f"Subject: {subject}\n"
-                f"Message: {contact_message.message}"
-            )
-            _send_admin_email(f"New Website Enquiry: {subject}", email_message)
-            messages.success(request, "Thank you! Your message has been sent. We'll get back to you soon.")
-            return redirect('contact')
-    else:
-        form = ContactForm()
-
-    return render(request, 'tours/contact.html', {'form': form})
+def robots_txt(request):
+    sitemap_url = request.build_absolute_uri("/sitemap.xml")
+    content = (
+        "User-agent: *\n"
+        "Allow: /\n"
+        "Disallow: /admin/\n"
+        f"Sitemap: {sitemap_url}\n"
+    )
+    return HttpResponse(content, content_type="text/plain")

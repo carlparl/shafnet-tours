@@ -1,1 +1,1 @@
-web: gunicorn shafnet_tours.wsgi:application --log-file -
+web: gunicorn shafnet_tours.wsgi:application

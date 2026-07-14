@@ -1,158 +1,190 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}{{ tour.title }} | Shafnet Tours{% endblock %}
 {% block meta_description %}Explore {{ tour.title }}, a {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ tour.title }} | Shafnet Tours{% endblock %}
+{% block og_description %}Explore this {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
+{% block og_image %}{% if tour.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ tour.image.url }}">{% endif %}{% endblock %}
 
 {% block content %}
-<div class="mx-auto max-w-7xl px-6 py-8 md:py-12">
-    <nav aria-label="Breadcrumb" class="mb-7 flex items-center gap-2 text-sm text-gray-500">
-        <a href="{% url 'home' %}" class="transition hover:text-green-800">Home</a>
-        <i class="fa-solid fa-chevron-right text-[9px] text-gray-300" aria-hidden="true"></i>
-        <a href="{% url 'tour_list' %}" class="transition hover:text-green-800">Tours</a>
-        <i class="fa-solid fa-chevron-right text-[9px] text-gray-300" aria-hidden="true"></i>
-        <span class="truncate font-medium text-gray-700" aria-current="page">{{ tour.title }}</span>
-    </nav>
-
-    {% if messages %}
-        {% for message in messages %}
-            <div class="mb-7 flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-900" role="status">
-                <i class="fa-solid fa-circle-check mt-0.5 text-green-600" aria-hidden="true"></i>
-                <span class="text-sm">{{ message }}</span>
-            </div>
-        {% endfor %}
-    {% endif %}
-
-    <section class="grid items-stretch gap-7 lg:grid-cols-[1.35fr_0.65fr]">
-        <div class="group overflow-hidden rounded-[2rem] bg-green-100">
-            {% if tour.image %}
-                <img src="{{ tour.image.url }}" class="image-zoom h-full min-h-[360px] w-full object-cover lg:min-h-[540px]" alt="{{ tour.title }}">
+<section class="detail-top">
+    <div class="container">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            {% if tour.target_audience == "domestic" %}
+                <a href="{% url 'domestic_tours' %}">Domestic tours</a>
             {% else %}
-                <div class="flex h-full min-h-[360px] items-center justify-center bg-gradient-to-br from-green-100 to-emerald-50 text-green-700 lg:min-h-[540px]">
-                    <i class="fa-solid fa-mountain-sun text-6xl" aria-hidden="true"></i>
-                </div>
+                <a href="{% url 'safaris' %}">Safaris</a>
             {% endif %}
-        </div>
+            <span aria-hidden="true">/</span>
+            <span>{{ tour.title }}</span>
+        </nav>
 
-        <div class="page-hero relative flex flex-col justify-between overflow-hidden rounded-[2rem] p-7 text-white md:p-9">
-            <div class="relative z-10">
-                <span class="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-bold text-green-100">
-                    {% if tour.target_audience == 'domestic' %}Local getaway{% else %}{{ tour.get_region_display|default:"Uganda safari" }}{% endif %}
-                </span>
-                <h1 class="mt-5 text-3xl font-extrabold leading-tight tracking-tight md:text-4xl">{{ tour.title }}</h1>
-                <p class="mt-3 flex items-center gap-2 text-green-100"><i class="fa-solid fa-location-dot text-green-400" aria-hidden="true"></i>{{ tour.location }}</p>
-
-                <div class="mt-8 grid grid-cols-2 gap-3">
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <i class="fa-regular fa-clock text-green-400" aria-hidden="true"></i>
-                        <p class="mt-2 text-[11px] font-bold uppercase tracking-wider text-green-300">Duration</p>
-                        <p class="mt-1 font-bold">{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <i class="fa-solid fa-user-group text-green-400" aria-hidden="true"></i>
-                        <p class="mt-2 text-[11px] font-bold uppercase tracking-wider text-green-300">Trip style</p>
-                        <p class="mt-1 font-bold">{% if tour.target_audience == 'domestic' %}Getaway{% else %}Safari{% endif %}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="relative z-10 mt-10 border-t border-white/10 pt-6">
-                {% if tour.price %}
-                    <p class="text-xs font-bold uppercase tracking-wider text-green-300">From</p>
-                    <p class="mt-1 text-3xl font-extrabold">${{ tour.price|floatformat:0 }} <span class="text-sm font-normal text-green-200">per person</span></p>
+        <div class="detail-hero-grid">
+            <div class="detail-image-wrap">
+                {% if tour.image %}
+                    <img src="{{ tour.image.url }}" alt="{{ tour.title }}">
                 {% else %}
-                    <p class="text-xs font-bold uppercase tracking-wider text-green-300">Pricing</p>
-                    <p class="mt-1 text-xl font-extrabold">Request a tailored quote</p>
+                    <div class="detail-image-placeholder {% if tour.target_audience == 'international' %}safari-placeholder{% endif %}">
+                        <span>{% if tour.target_audience == "domestic" %}Uganda getaway{% else %}Uganda safari{% endif %}</span>
+                    </div>
                 {% endif %}
-                <a href="#booking-form" class="btn-light mt-5 w-full">Request this tour</a>
+            </div>
+
+            <div class="detail-summary">
+                <div>
+                    <span class="detail-badge">
+                        {% if tour.target_audience == "domestic" %}Domestic tour{% else %}{{ tour.get_region_display|default:"Uganda safari" }}{% endif %}
+                    </span>
+                    <h1>{{ tour.title }}</h1>
+                    <p class="detail-location">{{ tour.location }}</p>
+
+                    <div class="detail-facts">
+                        <div><span>Duration</span><strong>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</strong></div>
+                        <div><span>Experience</span><strong>{% if tour.target_audience == "domestic" %}Local getaway{% else %}Safari journey{% endif %}</strong></div>
+                    </div>
+                </div>
+
+                <div class="detail-price-block">
+                    <span>{% if tour.price %}Starting from{% else %}Pricing{% endif %}</span>
+                    {% if tour.price %}
+                        <strong>${{ tour.price|floatformat:0 }} <small>per person</small></strong>
+                    {% else %}
+                        <strong>Request a tailored quote</strong>
+                    {% endif %}
+                    <a class="button button-light" href="https://wa.me/256778221069?text=Hello%20Shafnet%20Tours%2C%20I%20am%20interested%20in%20{{ tour.title|urlencode }}" target="_blank" rel="noopener noreferrer">Enquire on WhatsApp</a>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <div class="mt-12 grid gap-10 lg:grid-cols-[1fr_380px] lg:items-start">
-        <div>
-            <section aria-labelledby="about-tour-heading">
+<section class="section detail-content-section">
+    <div class="container detail-content-grid">
+        <div class="detail-main">
+            <section>
                 <p class="eyebrow">Tour overview</p>
-                <h2 id="about-tour-heading" class="display-title mt-2 text-3xl">About this experience</h2>
-                <div class="prose-copy mt-5 max-w-3xl leading-8 text-gray-700">{{ tour.description|linebreaks }}</div>
+                <h2>About this experience</h2>
+                <div class="detail-description">{{ tour.description|linebreaks }}</div>
             </section>
 
-            {% if tour.itineraries.exists %}
-            <section class="mt-12" aria-labelledby="itinerary-heading">
-                <p class="eyebrow">Day by day</p>
-                <h2 id="itinerary-heading" class="display-title mt-2 text-3xl">Your itinerary</h2>
-                <div class="relative mt-7 space-y-4 before:absolute before:bottom-6 before:left-5 before:top-6 before:w-px before:bg-green-200">
-                    {% for day in tour.itineraries.all %}
-                        <article class="content-card relative rounded-3xl bg-white p-6 pl-16">
-                            <span class="absolute left-3 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-green-700 text-xs font-extrabold text-white shadow-sm">{{ day.day }}</span>
-                            <p class="text-xs font-bold uppercase tracking-wider text-green-700">Day {{ day.day }}</p>
-                            <h3 class="mt-1 text-lg font-bold text-gray-950">{{ day.title }}</h3>
-                            <p class="mt-2 text-sm leading-6 text-gray-600">{{ day.description }}</p>
-                        </article>
-                    {% endfor %}
-                </div>
-            </section>
+            {% if tour.itineraries.all %}
+                <section class="itinerary-section">
+                    <p class="eyebrow">Day by day</p>
+                    <h2>Your itinerary</h2>
+                    <div class="itinerary-list">
+                        {% for item in tour.itineraries.all %}
+                            <article class="itinerary-item">
+                                <span class="day-number">{{ item.day }}</span>
+                                <div>
+                                    <p>Day {{ item.day }}</p>
+                                    <h3>{{ item.title }}</h3>
+                                    <div>{{ item.description|linebreaks }}</div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
             {% endif %}
 
-            <section class="mt-12 rounded-3xl bg-green-100/60 p-7">
-                <h2 class="text-xl font-extrabold text-green-950">Good to know</h2>
-                <div class="mt-5 grid gap-4 text-sm text-green-950/80 sm:grid-cols-2">
-                    <p class="flex gap-3"><i class="fa-solid fa-check mt-1 text-green-700" aria-hidden="true"></i><span>The itinerary can be adjusted to suit your group and schedule.</span></p>
-                    <p class="flex gap-3"><i class="fa-solid fa-check mt-1 text-green-700" aria-hidden="true"></i><span>We’ll confirm availability and final pricing before booking.</span></p>
-                    <p class="flex gap-3"><i class="fa-solid fa-check mt-1 text-green-700" aria-hidden="true"></i><span>Ask us about transport, accommodation and special requirements.</span></p>
-                    <p class="flex gap-3"><i class="fa-solid fa-check mt-1 text-green-700" aria-hidden="true"></i><span>You can also continue your enquiry directly on WhatsApp.</span></p>
+            <section class="tour-map-section" aria-labelledby="tour-map-title">
+                <p class="eyebrow">Find the destination</p>
+                <div class="map-heading">
+                    <div>
+                        <h2 id="tour-map-title">{{ tour.location }}</h2>
+                        <p>Use the map to understand the destination area. Our team will confirm the exact meeting point with your final itinerary.</p>
+                    </div>
+                    <a class="button button-secondary" href="https://www.google.com/maps/search/?api=1&amp;query={{ tour.location|urlencode }}%2C%20Uganda" target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
+                </div>
+                <div class="tour-map">
+                    <iframe
+                        title="Map showing {{ tour.location }}"
+                        src="https://www.google.com/maps?q={{ tour.location|urlencode }}%2C%20Uganda&amp;output=embed"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allowfullscreen>
+                    </iframe>
                 </div>
             </section>
         </div>
 
-        <aside id="booking-form" class="content-card scroll-mt-28 rounded-3xl bg-white p-6 lg:sticky lg:top-28" aria-labelledby="booking-heading">
-            <p class="eyebrow">Enquire now</p>
-            <h2 id="booking-heading" class="mt-2 text-2xl font-extrabold tracking-tight">Request this tour</h2>
-            <p class="mt-2 text-sm leading-6 text-gray-600">Share a few details and our team will follow up with availability and next steps.</p>
+        <aside class="detail-sidebar">
+            <div class="detail-info-card">
+                <p class="eyebrow">At a glance</p>
+                <dl>
+                    <div><dt>Location</dt><dd>{{ tour.location }}</dd></div>
+                    <div><dt>Duration</dt><dd>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</dd></div>
+                    <div><dt>Tour type</dt><dd>{% if tour.target_audience == "domestic" %}Domestic tour{% else %}International safari{% endif %}</dd></div>
+                    {% if tour.region %}<div><dt>Region</dt><dd>{{ tour.get_region_display }}</dd></div>{% endif %}
+                </dl>
+            </div>
 
-            {% if form.non_field_errors %}
-                <div class="mt-5 rounded-xl bg-red-50 p-3 text-sm text-red-700">{{ form.non_field_errors }}</div>
-            {% endif %}
+            <div class="booking-card" id="booking-form">
+                <p class="eyebrow">Booking request</p>
+                <h2>Request this tour</h2>
+                <p>Share your details and we will contact you to confirm availability, final pricing and next steps.</p>
 
-            <form method="post" class="mt-6 space-y-4" novalidate>
-                {% csrf_token %}
-                <div>
-                    <label for="{{ form.full_name.id_for_label }}" class="mb-1.5 block text-sm font-bold text-gray-800">Full name <span class="text-green-700">*</span></label>
-                    {{ form.full_name }}
-                    {% for error in form.full_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-                </div>
-                <div>
-                    <label for="{{ form.email.id_for_label }}" class="mb-1.5 block text-sm font-bold text-gray-800">Email address <span class="text-green-700">*</span></label>
-                    {{ form.email }}
-                    {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-                </div>
-                <div>
-                    <label for="{{ form.phone.id_for_label }}" class="mb-1.5 block text-sm font-bold text-gray-800">Phone number <span class="text-green-700">*</span></label>
-                    {{ form.phone }}
-                    {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label for="{{ form.number_of_people.id_for_label }}" class="mb-1.5 block text-sm font-bold text-gray-800">Travellers <span class="text-green-700">*</span></label>
-                        {{ form.number_of_people }}
-                        {% for error in form.number_of_people.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                {% if form.non_field_errors %}
+                    <div class="form-alert">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                <form method="post" class="booking-form" novalidate>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.full_name.id_for_label }}">Full name <span>*</span></label>
+                        {{ form.full_name }}
+                        {% for error in form.full_name.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
                     </div>
-                    <div>
-                        <label for="{{ form.preferred_date.id_for_label }}" class="mb-1.5 block text-sm font-bold text-gray-800">Travel date</label>
-                        {{ form.preferred_date }}
-                        {% for error in form.preferred_date.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-                    </div>
-                </div>
-                <div>
-                    <label for="{{ form.message.id_for_label }}" class="mb-1.5 block text-sm font-bold text-gray-800">Anything else?</label>
-                    {{ form.message }}
-                    {% for error in form.message.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
-                </div>
-                <button type="submit" class="btn-primary w-full py-4">Send booking request</button>
-            </form>
 
-            <div class="my-5 flex items-center gap-3 text-xs text-gray-400"><span class="h-px flex-1 bg-gray-200"></span>or<span class="h-px flex-1 bg-gray-200"></span></div>
-            <a href="https://wa.me/256778221069?text=Hi%20Shafnet%20Tours%2C%20I%27m%20interested%20in%20{{ tour.title|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn-secondary w-full py-4"><i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i> Continue on WhatsApp</a>
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">Email address <span>*</span></label>
+                        {{ form.email }}
+                        {% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Phone number <span>*</span></label>
+                        {{ form.phone }}
+                        {% for error in form.phone.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.number_of_people.id_for_label }}">Travellers <span>*</span></label>
+                            {{ form.number_of_people }}
+                            {% for error in form.number_of_people.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.preferred_date.id_for_label }}">Travel date</label>
+                            {{ form.preferred_date }}
+                            {% for error in form.preferred_date.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}">Additional details</label>
+                        {{ form.message }}
+                        {% for error in form.message.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+                    </div>
+
+                    <button type="submit" class="button button-primary booking-submit">Send booking request</button>
+                    <p class="form-note">Submitting this form does not require payment. Our team will contact you before anything is confirmed.</p>
+                </form>
+            </div>
         </aside>
     </div>
-</div>
+</section>
+
+<section class="detail-final-cta">
+    <div class="container">
+        <div>
+            <p class="eyebrow eyebrow-light">Ready to start?</p>
+            <h2>Ask us about {{ tour.title }}.</h2>
+            <p>We will confirm availability, final pricing and the next steps for your journey.</p>
+            <a class="button button-light" href="#booking-form">Start your booking request</a>
+        </div>
+    </div>
+</section>
 {% endblock %}
