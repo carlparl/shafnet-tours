@@ -3,6 +3,8 @@ import logging
 from django.conf import settings
 from django.contrib import admin, messages
 from django.core.mail import send_mail
+from django.utils import timezone
+from django.utils.html import format_html
 
 from .models import (
     Booking,
@@ -19,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def send_booking_status_email(booking):
-    """Notify a customer after an admin changes the booking status."""
+    """Notify a customer after an administrator changes the booking status."""
     status_messages = {
         "pending": (
             "Your booking request is being reviewed. We will contact you "
@@ -62,6 +64,9 @@ def send_booking_status_email(booking):
             "Booking %s status changed, but the customer email failed",
             booking.pk,
         )
+        return False
+
+    return True
 
 
 class ItineraryInline(admin.TabularInline):
@@ -86,6 +91,7 @@ class TourAdmin(admin.ModelAdmin):
     search_fields = ("title", "description", "location")
     prepopulated_fields = {"slug": ("title",)}
     list_editable = ("is_featured",)
+    list_per_page = 30
     inlines = [ItineraryInline]
 
 
@@ -94,21 +100,48 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         "booking_reference",
         "full_name",
+        "customer_email",
+        "customer_phone",
         "tour",
         "preferred_date",
+        "travel_timing",
         "number_of_people",
-        "status",
+        "status_badge",
         "created_at",
     )
     list_display_links = ("booking_reference", "full_name")
-    list_editable = ("status",)
-    list_filter = ("status", "created_at", "preferred_date", "tour__target_audience")
-    search_fields = ("full_name", "email", "phone", "tour__title")
-    readonly_fields = ("booking_reference", "created_at")
+    list_filter = (
+        "status",
+        ("created_at", admin.DateFieldListFilter),
+        ("preferred_date", admin.DateFieldListFilter),
+        "tour__target_audience",
+        "tour",
+    )
+    search_fields = (
+        "=id",
+        "full_name",
+        "email",
+        "phone",
+        "tour__title",
+    )
+    search_help_text = (
+        "Search by booking number, customer name, email, phone, or tour."
+    )
+    readonly_fields = (
+        "booking_reference",
+        "travel_timing",
+        "created_at",
+    )
+    autocomplete_fields = ("tour",)
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
+    list_select_related = ("tour",)
     list_per_page = 30
+    save_on_top = True
     actions = ("mark_confirmed", "mark_pending", "mark_cancelled")
+    actions_on_top = True
+    actions_on_bottom = True
+    empty_value_display = "—"
     fieldsets = (
         (
             "Booking",
@@ -118,6 +151,7 @@ class BookingAdmin(admin.ModelAdmin):
                     "tour",
                     "status",
                     "preferred_date",
+                    "travel_timing",
                     "number_of_people",
                     "created_at",
                 )
@@ -133,14 +167,68 @@ class BookingAdmin(admin.ModelAdmin):
         ),
     )
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("tour")
-
     @admin.display(description="Reference", ordering="id")
     def booking_reference(self, obj):
-        if not obj.pk:
+        if not obj or not obj.pk:
             return "Assigned after saving"
         return f"ST-{obj.pk:05d}"
+
+    @admin.display(description="Email", ordering="email")
+    def customer_email(self, obj):
+        return format_html('<a href="mailto:{}">{}</a>', obj.email, obj.email)
+
+    @admin.display(description="Phone", ordering="phone")
+    def customer_phone(self, obj):
+        phone_uri = "".join(
+            character
+            for character in obj.phone
+            if character.isdigit() or character == "+"
+        )
+        return format_html('<a href="tel:{}">{}</a>', phone_uri, obj.phone)
+
+    @admin.display(description="Travel", ordering="preferred_date")
+    def travel_timing(self, obj):
+        if not obj or not obj.preferred_date:
+            return format_html('<span style="color:#6b7280;">Not selected</span>')
+
+        days = (obj.preferred_date - timezone.localdate()).days
+        if days < 0:
+            label = "Past"
+            color = "#6b7280"
+        elif days == 0:
+            label = "Today"
+            color = "#dc2626"
+        elif days == 1:
+            label = "Tomorrow"
+            color = "#d97706"
+        else:
+            label = f"In {days} days"
+            color = "#047857"
+
+        return format_html(
+            '<strong style="color:{};">{}</strong>',
+            color,
+            label,
+        )
+
+    @admin.display(description="Status", ordering="status")
+    def status_badge(self, obj):
+        styles = {
+            "pending": ("#92400e", "#fef3c7"),
+            "confirmed": ("#166534", "#dcfce7"),
+            "cancelled": ("#991b1b", "#fee2e2"),
+        }
+        foreground, background = styles.get(
+            obj.status,
+            ("#374151", "#f3f4f6"),
+        )
+        return format_html(
+            '<span style="display:inline-block;padding:4px 9px;border-radius:999px;'
+            'font-weight:700;color:{};background:{};">{}</span>',
+            foreground,
+            background,
+            obj.get_status_display(),
+        )
 
     def save_model(self, request, obj, form, change):
         previous_status = None
@@ -154,25 +242,62 @@ class BookingAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
         if previous_status and previous_status != obj.status:
-            send_booking_status_email(obj)
-            self.message_user(
-                request,
-                f"Booking ST-{obj.pk:05d} updated to {obj.get_status_display()}.",
-                messages.SUCCESS,
-            )
+            email_sent = send_booking_status_email(obj)
+            if email_sent:
+                self.message_user(
+                    request,
+                    (
+                        f"Booking ST-{obj.pk:05d} updated to "
+                        f"{obj.get_status_display()}, and the customer was notified."
+                    ),
+                    messages.SUCCESS,
+                )
+            else:
+                self.message_user(
+                    request,
+                    (
+                        f"Booking ST-{obj.pk:05d} was updated, but the customer "
+                        "email failed. Check the server and Brevo logs."
+                    ),
+                    messages.WARNING,
+                )
 
     def _change_status(self, request, queryset, status):
         changed = 0
+        emails_sent = 0
+        emails_failed = 0
+
         for booking in queryset.exclude(status=status).select_related("tour"):
             booking.status = status
             booking.save(update_fields=["status"])
-            send_booking_status_email(booking)
+            if send_booking_status_email(booking):
+                emails_sent += 1
+            else:
+                emails_failed += 1
             changed += 1
+
+        status_label = dict(Booking.STATUS_CHOICES)[status]
+        if changed == 0:
+            self.message_user(
+                request,
+                f"No bookings required a change to {status_label}.",
+                messages.INFO,
+            )
+            return
+
+        summary = (
+            f"{changed} booking(s) updated to {status_label}. "
+            f"{emails_sent} customer email(s) sent."
+        )
+        if emails_failed:
+            summary += (
+                f" {emails_failed} email(s) failed; check the server and Brevo logs."
+            )
 
         self.message_user(
             request,
-            f"{changed} booking(s) updated to {dict(Booking.STATUS_CHOICES)[status]}.",
-            messages.SUCCESS,
+            summary,
+            messages.WARNING if emails_failed else messages.SUCCESS,
         )
 
     @admin.action(description="Mark selected bookings as confirmed")
@@ -207,8 +332,10 @@ class DestinationAdmin(admin.ModelAdmin):
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ("full_name", "email", "subject", "created_at")
+    list_filter = (("created_at", admin.DateFieldListFilter),)
     search_fields = ("full_name", "email", "subject", "message")
     readonly_fields = ("full_name", "email", "subject", "message", "created_at")
+    date_hierarchy = "created_at"
     ordering = ("-created_at",)
 
     def has_add_permission(self, request):
