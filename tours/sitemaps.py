@@ -5,14 +5,26 @@ from .models import Tour
 
 
 class StaticViewSitemap(Sitemap):
-    changefreq = "weekly"
-    priority = 0.8
+    pages = (
+        ("home", "weekly", 1.0),
+        ("domestic_tours", "weekly", 0.9),
+        ("safaris", "weekly", 0.9),
+        ("booking_policy", "yearly", 0.4),
+        ("terms_and_conditions", "yearly", 0.3),
+        ("privacy_policy", "yearly", 0.3),
+    )
 
     def items(self):
-        return ["home", "domestic_tours", "safaris"]
+        return self.pages
 
     def location(self, item):
-        return reverse(item)
+        return reverse(item[0])
+
+    def changefreq(self, item):
+        return item[1]
+
+    def priority(self, item):
+        return item[2]
 
 
 class TourSitemap(Sitemap):
@@ -21,6 +33,3 @@ class TourSitemap(Sitemap):
 
     def items(self):
         return Tour.objects.all()
-
-    def lastmod(self, tour):
-        return tour.created_at
