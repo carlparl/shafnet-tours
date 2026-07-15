@@ -16,6 +16,9 @@
     <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
     <title>{% block title %}Shafnet Tours & Travel Ltd{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/site.css' %}">
+    <link rel="stylesheet" href="{% static 'css/policies.css' %}">
+    <link rel="icon" type="image/png" href="{% static 'logo.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'logo.png' %}">
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -103,6 +106,12 @@
                 <a href="tel:+256778221069">+256 778 221 069</a>
                 <a href="mailto:info@shafnettours.com">info@shafnettours.com</a>
                 <span>Kampala, Uganda</span>
+            </div>
+            <div>
+                <h2>Policies</h2>
+                <a href="{% url 'booking_policy' %}">Booking & cancellation</a>
+                <a href="{% url 'terms_and_conditions' %}">Terms & conditions</a>
+                <a href="{% url 'privacy_policy' %}">Privacy policy</a>
             </div>
         </div>
         <div class="container footer-bottom">

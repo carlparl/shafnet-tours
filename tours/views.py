@@ -109,6 +109,18 @@ def safaris(request):
     return render(request, "tours/tour_list.html", context)
 
 
+def privacy_policy(request):
+    return render(request, "tours/privacy_policy.html")
+
+
+def terms_and_conditions(request):
+    return render(request, "tours/terms_and_conditions.html")
+
+
+def booking_policy(request):
+    return render(request, "tours/booking_policy.html")
+
+
 def tour_detail(request, slug):
     tour = get_object_or_404(
         Tour.objects.prefetch_related("itineraries"),
@@ -118,12 +130,19 @@ def tour_detail(request, slug):
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
-            booking = form.save(commit=False)
-            booking.tour = tour
-            booking.save()
-            _send_booking_emails(booking)
-            request.session["latest_booking_id"] = booking.pk
-            return redirect("booking_confirmation")
+            accepted_policies = request.POST.get("accept_policies") == "yes"
+            if not accepted_policies:
+                form.add_error(
+                    None,
+                    "Please accept the Terms, Booking Policy and Privacy Policy.",
+                )
+            else:
+                booking = form.save(commit=False)
+                booking.tour = tour
+                booking.save()
+                _send_booking_emails(booking)
+                request.session["latest_booking_id"] = booking.pk
+                return redirect("booking_confirmation")
     else:
         form = BookingForm()
 

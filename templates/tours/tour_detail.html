@@ -127,7 +127,7 @@
                 <p>Share your details and we will contact you to confirm availability, final pricing and next steps.</p>
 
                 {% if form.non_field_errors %}
-                    <div class="form-alert">{{ form.non_field_errors }}</div>
+                    <div class="form-alert" role="alert">{{ form.non_field_errors }}</div>
                 {% endif %}
 
                 <form method="post" class="booking-form" novalidate>
@@ -168,6 +168,22 @@
                         {{ form.message }}
                         {% for error in form.message.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
                     </div>
+
+                    <label class="policy-consent" for="accept-policies">
+                        <input
+                            id="accept-policies"
+                            name="accept_policies"
+                            type="checkbox"
+                            value="yes"
+                            {% if request.POST.accept_policies == "yes" %}checked{% endif %}
+                        >
+                        <span>
+                            I have read and accept the
+                            <a href="{% url 'terms_and_conditions' %}">Terms &amp; Conditions</a>,
+                            <a href="{% url 'booking_policy' %}">Booking &amp; Cancellation Policy</a>
+                            and <a href="{% url 'privacy_policy' %}">Privacy Policy</a>.
+                        </span>
+                    </label>
 
                     <button type="submit" class="button button-primary booking-submit">Send booking request</button>
                     <p class="form-note">Submitting this form does not require payment. Our team will contact you before anything is confirmed.</p>
