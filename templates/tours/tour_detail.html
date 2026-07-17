@@ -80,8 +80,26 @@
                                 <span class="day-number">{{ item.day }}</span>
                                 <div>
                                     <p>Day {{ item.day }}</p>
-                                    <h3>{{ item.title }}</h3>
-                                    <div>{{ item.description|linebreaks }}</div>
+                                   <h3>{{ item.title }}</h3>
+<div>{{ item.description|linebreaks }}</div>
+
+{% if item.meals or item.accommodation %}
+    <dl class="itinerary-details">
+        {% if item.meals %}
+            <div>
+                <dt>Meals</dt>
+                <dd>{{ item.meals }}</dd>
+            </div>
+        {% endif %}
+
+        {% if item.accommodation %}
+            <div>
+                <dt>Accommodation</dt>
+                <dd>{{ item.accommodation }}</dd>
+            </div>
+        {% endif %}
+    </dl>
+{% endif %}
                                 </div>
                             </article>
                         {% endfor %}

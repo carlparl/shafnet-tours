@@ -69,11 +69,13 @@ def send_booking_status_email(booking):
     return True
 
 
-class ItineraryInline(admin.TabularInline):
+class ItineraryInline(admin.StackedInline):
     model = Itinerary
     extra = 1
-    fields = ("day", "title", "description")
+    fields = (("day", "title"), "description", ("meals", "accommodation"))
     ordering = ("day",)
+    verbose_name = "Itinerary day"
+    verbose_name_plural = "Day-by-day itinerary"
 
 
 @admin.register(Tour)
