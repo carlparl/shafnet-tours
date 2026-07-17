@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Booking, Tour
+from .models import Booking, ContactMessage, Tour
 
 
 @override_settings(
@@ -51,6 +51,12 @@ class PublicSiteTests(TestCase):
             reverse("home"),
             reverse("domestic_tours"),
             reverse("safaris"),
+            reverse("about"),
+            reverse("gallery"),
+            reverse("contact"),
+            reverse("privacy_policy"),
+            reverse("terms_and_conditions"),
+            reverse("booking_policy"),
             reverse("tour_detail", args=[self.safari_tour.slug]),
         ]
 
@@ -112,6 +118,35 @@ class PublicSiteTests(TestCase):
         )
         self.assertEqual(Booking.objects.count(), 0)
 
+    def test_contact_creates_record_sends_emails_and_redirects(self):
+        response = self.client.post(
+            reverse("contact"),
+            {
+                "full_name": "Amina Traveller",
+                "email": "amina@example.com",
+                "subject": "Custom Uganda journey",
+                "message": "Please help me plan a seven-day trip.",
+            },
+        )
+
+        self.assertRedirects(response, reverse("contact"))
+        self.assertEqual(ContactMessage.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 2)
+
+    def test_contact_rejects_incomplete_submission(self):
+        response = self.client.post(
+            reverse("contact"),
+            {
+                "full_name": "Amina Traveller",
+                "email": "not-an-email",
+                "message": "",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ContactMessage.objects.count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+
     def test_sitemap_and_robots_are_available(self):
         sitemap_response = self.client.get("/sitemap.xml")
         self.assertEqual(sitemap_response.status_code, 200)
@@ -119,6 +154,9 @@ class PublicSiteTests(TestCase):
             sitemap_response,
             self.safari_tour.get_absolute_url(),
         )
+        self.assertContains(sitemap_response, reverse("about"))
+        self.assertContains(sitemap_response, reverse("gallery"))
+        self.assertContains(sitemap_response, reverse("contact"))
 
         robots_response = self.client.get(reverse("robots_txt"))
         self.assertEqual(robots_response.status_code, 200)

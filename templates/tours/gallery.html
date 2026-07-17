@@ -1,51 +1,58 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
-{% block title %}Travel Gallery | Shafnet Tours{% endblock %}
-{% block meta_description %}See moments and landscapes from Shafnet Tours experiences across Uganda.{% endblock %}
+{% block title %}Uganda Travel Gallery | Shafnet Tours{% endblock %}
+{% block meta_description %}Explore travel photographs and moments from Shafnet Tours experiences across Uganda.{% endblock %}
 
 {% block content %}
-<section class="page-hero text-white">
-    <div class="relative z-10 mx-auto max-w-7xl px-6 py-16 md:py-20">
-        <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-green-300">Travel gallery</p>
-        <h1 class="mt-3 max-w-3xl text-4xl font-extrabold tracking-tight md:text-5xl">A glimpse of Uganda’s wild, quiet and unforgettable places.</h1>
-        <p class="mt-4 max-w-2xl text-lg leading-8 text-green-100">Landscapes, wildlife and moments from journeys across the Pearl of Africa.</p>
+<section class="page-hero page-hero-gallery">
+    <div class="container page-hero-inner">
+        <p class="hero-label">Travel gallery</p>
+        <h1>A glimpse of Uganda’s wild, quiet and memorable places.</h1>
+        <p>Explore landscapes, wildlife and travel moments shared through the Shafnet gallery.</p>
     </div>
 </section>
 
-<div class="mx-auto max-w-7xl px-6 py-14 md:py-20">
-    {% if images %}
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {% for img in images %}
-                <figure class="group relative overflow-hidden rounded-3xl bg-green-100">
-                    <img src="{{ img.image.url }}" class="image-zoom h-80 w-full object-cover" alt="{{ img.title|default:img.caption|default:'Uganda travel experience' }}" loading="lazy">
-                    {% if img.caption or img.title %}
-                        <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-green-950 via-green-950/75 to-transparent p-6 pt-16 text-white">
-                            {% if img.title %}<h2 class="text-lg font-bold">{{ img.title }}</h2>{% endif %}
-                            {% if img.caption %}<p class="mt-1 text-sm leading-6 text-green-100">{{ img.caption }}</p>{% endif %}
-                        </figcaption>
-                    {% endif %}
-                </figure>
-            {% endfor %}
-        </div>
-    {% else %}
-        <section class="content-card rounded-[2rem] bg-white px-6 py-16 text-center">
-            <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-800"><i class="fa-regular fa-images text-2xl" aria-hidden="true"></i></span>
-            <h2 class="mt-5 text-2xl font-extrabold tracking-tight">More travel moments are coming soon</h2>
-            <p class="mx-auto mt-3 max-w-lg leading-7 text-gray-600">In the meantime, browse our tours and imagine where your next journey could take you.</p>
-            <a href="{% url 'tour_list' %}" class="btn-primary mt-7">Explore tours</a>
-        </section>
-    {% endif %}
+<section class="section">
+    <div class="container">
+        {% if images %}
+            <div class="gallery-grid">
+                {% for image in images %}
+                    <figure class="gallery-card">
+                        <img src="{{ image.image.url }}" alt="{{ image.title|default:image.caption|default:'Uganda travel experience' }}" loading="lazy">
+                        {% if image.title or image.caption %}
+                            <figcaption>
+                                {% if image.title %}<h2>{{ image.title }}</h2>{% endif %}
+                                {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+                            </figcaption>
+                        {% endif %}
+                    </figure>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-card gallery-empty">
+                <span class="empty-mark" aria-hidden="true">▣</span>
+                <h2>More travel moments are coming soon</h2>
+                <p>The gallery is managed from the Shafnet administration area. Meanwhile, explore the available tours.</p>
+                <div class="page-cta-actions">
+                    <a class="button button-primary" href="{% url 'domestic_tours' %}">Domestic tours</a>
+                    <a class="button button-secondary" href="{% url 'safaris' %}">Uganda safaris</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
 
-    <section class="page-hero relative mt-14 overflow-hidden rounded-[2rem] px-6 py-12 text-center text-white md:p-14">
-        <div class="relative z-10 mx-auto max-w-2xl">
-            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-green-300">See it for yourself</p>
-            <h2 class="mt-3 text-3xl font-extrabold tracking-tight">Your own Uganda story could begin here.</h2>
-            <p class="mt-4 leading-7 text-green-100">Explore our tours or ask us to create a journey around the places that inspire you.</p>
-            <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-                <a href="{% url 'tour_list' %}" class="btn-light">Browse tours</a>
-                <a href="{% url 'contact' %}" class="inline-flex items-center justify-center rounded-full border border-white/40 px-6 py-3 text-sm font-bold transition hover:bg-white/10">Plan a trip</a>
+<section class="detail-final-cta">
+    <div class="container">
+        <div>
+            <p class="eyebrow eyebrow-light">See it for yourself</p>
+            <h2>Your own Uganda story could begin here.</h2>
+            <p>Ask us to help plan a journey around the places and experiences that interest you.</p>
+            <div class="page-cta-actions">
+                <a class="button button-light" href="{% url 'contact' %}">Send an enquiry</a>
+                <a class="button button-outline-light" href="https://wa.me/256778221069?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Use WhatsApp</a>
             </div>
         </div>
-    </section>
-</div>
+    </div>
+</section>
 {% endblock %}

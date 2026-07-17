@@ -1,12 +1,13 @@
 import logging
 
 from django.conf import settings
-from django.core.mail import send_mail
+from django.contrib import messages
+from django.core.mail import EmailMessage, send_mail
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import BookingForm
-from .models import Booking, Destination, Testimonial, Tour
+from .forms import BookingForm, ContactForm
+from .models import Booking, Destination, GalleryImage, Testimonial, Tour
 
 
 logger = logging.getLogger(__name__)
@@ -65,6 +66,54 @@ def _send_booking_emails(booking):
         )
 
 
+def _send_contact_emails(contact_message):
+    """Notify Shafnet and acknowledge a saved website enquiry."""
+    subject = contact_message.subject or "Website enquiry"
+    reference = f"ENQ-{contact_message.pk:05d}"
+
+    admin_message = (
+        "A new website enquiry was submitted.\n\n"
+        f"Reference: {reference}\n"
+        f"Name: {contact_message.full_name}\n"
+        f"Email: {contact_message.email}\n"
+        f"Subject: {subject}\n\n"
+        f"Message:\n{contact_message.message}"
+    )
+    customer_message = (
+        f"Hello {contact_message.full_name},\n\n"
+        "Thank you for contacting Shafnet Tours & Travel. "
+        f"We received your enquiry ({reference}) and our team will reply "
+        "using the contact details you provided.\n\n"
+        f"Subject: {subject}\n\n"
+        "Shafnet Tours & Travel Ltd\n"
+        "+256 778 221 069"
+    )
+
+    try:
+        EmailMessage(
+            subject=f"New website enquiry: {subject}",
+            body=admin_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[settings.BOOKING_NOTIFICATION_EMAIL],
+            reply_to=[contact_message.email],
+        ).send(fail_silently=False)
+        send_mail(
+            subject=f"We received your Shafnet enquiry ({reference})",
+            message=customer_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[contact_message.email],
+            fail_silently=False,
+        )
+    except Exception:
+        logger.exception(
+            "Contact enquiry %s was saved, but its email notification failed",
+            contact_message.pk,
+        )
+        return False
+
+    return True
+
+
 def home(request):
     context = {
         "domestic_tours": Tour.objects.filter(
@@ -107,6 +156,42 @@ def safaris(request):
         ),
     }
     return render(request, "tours/tour_list.html", context)
+
+
+def about(request):
+    return render(request, "tours/about.html")
+
+
+def gallery(request):
+    return render(
+        request,
+        "tours/gallery.html",
+        {"images": GalleryImage.objects.all()},
+    )
+
+
+def contact(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            contact_message = form.save()
+            email_sent = _send_contact_emails(contact_message)
+            if email_sent:
+                messages.success(
+                    request,
+                    "Thank you. Your enquiry has been received and a copy was sent to your email.",
+                )
+            else:
+                messages.warning(
+                    request,
+                    "Your enquiry was saved, but the confirmation email could not be sent. "
+                    "You can also contact us by phone or WhatsApp.",
+                )
+            return redirect("contact")
+    else:
+        form = ContactForm()
+
+    return render(request, "tours/contact.html", {"form": form})
 
 
 def privacy_policy(request):
