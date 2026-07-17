@@ -30,6 +30,18 @@ class Tour(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
+    inclusions = models.TextField(
+        blank=True,
+        help_text="Enter one included service per line.",
+    )
+    exclusions = models.TextField(
+        blank=True,
+        help_text="Enter one excluded service per line.",
+    )
+    optional_activities = models.TextField(
+        blank=True,
+        help_text="Enter one optional activity per line.",
+    )
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -79,6 +91,22 @@ class Tour(models.Model):
 
     def get_absolute_url(self):
         return reverse("tour_detail", kwargs={"slug": self.slug})
+
+    @staticmethod
+    def _clean_list(value):
+        return [item.strip() for item in value.splitlines() if item.strip()]
+
+    @property
+    def inclusion_items(self):
+        return self._clean_list(self.inclusions)
+
+    @property
+    def exclusion_items(self):
+        return self._clean_list(self.exclusions)
+
+    @property
+    def optional_activity_items(self):
+        return self._clean_list(self.optional_activities)
 
     @property
     def formatted_price(self):

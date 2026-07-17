@@ -13,6 +13,9 @@ class ItineraryDisplayTests(TestCase):
             duration_days=3,
             location="Western Uganda",
             target_audience="international",
+            inclusions="Park entrance fees\nBottled drinking water",
+            exclusions="International flights\nVisa fees",
+            optional_activities="Community visit\nBirding experience",
         )
         Itinerary.objects.create(
             tour=cls.tour,
@@ -32,3 +35,7 @@ class ItineraryDisplayTests(TestCase):
         self.assertContains(response, "Arrival and welcome")
         self.assertContains(response, "Lunch and dinner")
         self.assertContains(response, "Example Safari Lodge")
+        self.assertContains(response, "What’s included")
+        self.assertContains(response, "Park entrance fees")
+        self.assertContains(response, "International flights")
+        self.assertContains(response, "Community visit")

@@ -80,29 +80,51 @@
                                 <span class="day-number">{{ item.day }}</span>
                                 <div>
                                     <p>Day {{ item.day }}</p>
-                                   <h3>{{ item.title }}</h3>
-<div>{{ item.description|linebreaks }}</div>
-
-{% if item.meals or item.accommodation %}
-    <dl class="itinerary-details">
-        {% if item.meals %}
-            <div>
-                <dt>Meals</dt>
-                <dd>{{ item.meals }}</dd>
-            </div>
-        {% endif %}
-
-        {% if item.accommodation %}
-            <div>
-                <dt>Accommodation</dt>
-                <dd>{{ item.accommodation }}</dd>
-            </div>
-        {% endif %}
-    </dl>
-{% endif %}
+                                    <h3>{{ item.title }}</h3>
+                                    <div>{{ item.description|linebreaks }}</div>
+                                    {% if item.meals or item.accommodation %}
+                                        <dl class="itinerary-details">
+                                            {% if item.meals %}<div><dt>Meals</dt><dd>{{ item.meals }}</dd></div>{% endif %}
+                                            {% if item.accommodation %}<div><dt>Accommodation</dt><dd>{{ item.accommodation }}</dd></div>{% endif %}
+                                        </dl>
+                                    {% endif %}
                                 </div>
                             </article>
                         {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {% if tour.inclusion_items or tour.exclusion_items or tour.optional_activity_items %}
+                <section class="package-section">
+                    <p class="eyebrow">Plan with confidence</p>
+                    <h2>Package details</h2>
+                    <div class="package-grid">
+                        {% if tour.inclusion_items %}
+                            <article class="package-card package-includes">
+                                <h3>What’s included</h3>
+                                <ul>
+                                    {% for item in tour.inclusion_items %}<li>{{ item }}</li>{% endfor %}
+                                </ul>
+                            </article>
+                        {% endif %}
+                        {% if tour.exclusion_items %}
+                            <article class="package-card package-excludes">
+                                <h3>What’s not included</h3>
+                                <ul>
+                                    {% for item in tour.exclusion_items %}<li>{{ item }}</li>{% endfor %}
+                                </ul>
+                            </article>
+                        {% endif %}
+                        {% if tour.optional_activity_items %}
+                            <article class="package-card package-optional">
+                                <h3>Optional activities</h3>
+                                <ul>
+                                    {% for item in tour.optional_activity_items %}<li>{{ item }}</li>{% endfor %}
+                                </ul>
+                                <p>Optional activities are subject to availability and are quoted separately.</p>
+                            </article>
+                        {% endif %}
                     </div>
                 </section>
             {% endif %}

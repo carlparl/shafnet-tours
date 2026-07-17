@@ -104,6 +104,25 @@ class TourAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     list_editable = ("is_featured",)
     list_per_page = 30
+    fieldsets = (
+        ("Tour details", {"fields": ("title", "slug", "description", "image")}),
+        (
+            "Classification",
+            {"fields": (("target_audience", "region"), ("location", "duration_days"))},
+        ),
+        (
+            "Pricing",
+            {"fields": (("price", "currency"), ("price_basis", "price_is_from"))},
+        ),
+        (
+            "Package information",
+            {
+                "fields": ("inclusions", "exclusions", "optional_activities"),
+                "description": "Enter one item per line. These appear as structured lists on the public tour page.",
+            },
+        ),
+        ("Visibility", {"fields": ("is_featured",)}),
+    )
     inlines = [ItineraryInline]
 
 
