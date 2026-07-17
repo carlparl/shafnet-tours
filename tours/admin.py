@@ -85,9 +85,19 @@ class TourAdmin(admin.ModelAdmin):
         "location",
         "duration_days",
         "price",
+        "currency",
+        "price_basis",
+        "price_is_from",
         "is_featured",
     )
-    list_filter = ("target_audience", "region", "is_featured")
+    list_filter = (
+        "target_audience",
+        "currency",
+        "price_basis",
+        "price_is_from",
+        "region",
+        "is_featured",
+    )
     search_fields = ("title", "description", "location")
     prepopulated_fields = {"slug": ("title",)}
     list_editable = ("is_featured",)

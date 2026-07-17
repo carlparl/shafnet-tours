@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -16,6 +17,16 @@ class Tour(models.Model):
         ("eastern", "Eastern Uganda"),
     ]
 
+    CURRENCY_CHOICES = [
+        ("UGX", "Ugandan shillings (UGX)"),
+        ("USD", "US dollars (USD)"),
+    ]
+
+    PRICE_BASIS_CHOICES = [
+        ("per_person", "Per person"),
+        ("per_group", "Per group"),
+    ]
+
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
@@ -24,6 +35,22 @@ class Tour(models.Model):
         decimal_places=2,
         blank=True,
         null=True,
+        help_text="Enter the amount only. Select its currency and basis below.",
+        validators=[MinValueValidator(0)],
+    )
+    currency = models.CharField(
+        max_length=3,
+        choices=CURRENCY_CHOICES,
+        default="USD",
+    )
+    price_basis = models.CharField(
+        max_length=20,
+        choices=PRICE_BASIS_CHOICES,
+        default="per_person",
+    )
+    price_is_from = models.BooleanField(
+        default=True,
+        verbose_name="Show as a starting price",
     )
     duration_days = models.PositiveIntegerField()
     location = models.CharField(max_length=200)
@@ -52,6 +79,26 @@ class Tour(models.Model):
 
     def get_absolute_url(self):
         return reverse("tour_detail", kwargs={"slug": self.slug})
+
+    @property
+    def formatted_price(self):
+        if self.price is None:
+            return ""
+
+        if self.price == self.price.to_integral_value():
+            amount = f"{self.price:,.0f}"
+        else:
+            amount = f"{self.price:,.2f}"
+        return f"{self.currency} {amount}"
+
+    @property
+    def price_summary(self):
+        if self.price is None:
+            return "Price on request"
+
+        prefix = "From " if self.price_is_from else ""
+        basis = self.get_price_basis_display().lower()
+        return f"{prefix}{self.formatted_price} {basis}"
 
     def __str__(self):
         return self.title

@@ -48,9 +48,9 @@
                 </div>
 
                 <div class="detail-price-block">
-                    <span>{% if tour.price %}Starting from{% else %}Pricing{% endif %}</span>
+                    <span>{% if tour.price %}{% if tour.price_is_from %}Starting from{% else %}Advertised price{% endif %}{% else %}Pricing{% endif %}</span>
                     {% if tour.price %}
-                        <strong>${{ tour.price|floatformat:0 }} <small>per person</small></strong>
+                        <strong>{{ tour.formatted_price }} <small>{{ tour.get_price_basis_display|lower }}</small></strong>
                     {% else %}
                         <strong>Request a tailored quote</strong>
                     {% endif %}
@@ -117,6 +117,7 @@
                     <div><dt>Location</dt><dd>{{ tour.location }}</dd></div>
                     <div><dt>Duration</dt><dd>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</dd></div>
                     <div><dt>Tour type</dt><dd>{% if tour.target_audience == "domestic" %}Domestic tour{% else %}International safari{% endif %}</dd></div>
+                    <div><dt>Pricing</dt><dd>{{ tour.price_summary }}</dd></div>
                     {% if tour.region %}<div><dt>Region</dt><dd>{{ tour.get_region_display }}</dd></div>{% endif %}
                 </dl>
             </div>

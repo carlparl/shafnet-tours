@@ -81,7 +81,7 @@
                         <h3><a href="{% url 'tour_detail' tour.slug %}">{{ tour.title }}</a></h3>
                         <p>{{ tour.description|truncatewords:20 }}</p>
                         <div class="card-footer">
-                            {% if tour.price %}<strong>From ${{ tour.price|floatformat:0 }}</strong>{% else %}<strong>Price on request</strong>{% endif %}
+                            <strong>{{ tour.price_summary }}</strong>
                             <a href="{% url 'tour_detail' tour.slug %}">View details <span aria-hidden="true">→</span></a>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                         <h3><a href="{% url 'tour_detail' tour.slug %}">{{ tour.title }}</a></h3>
                         <p>{{ tour.description|truncatewords:20 }}</p>
                         <div class="card-footer">
-                            {% if tour.price %}<strong>From ${{ tour.price|floatformat:0 }}</strong>{% else %}<strong>Price on request</strong>{% endif %}
+                            <strong>{{ tour.price_summary }}</strong>
                             <a href="{% url 'tour_detail' tour.slug %}">View details <span aria-hidden="true">→</span></a>
                         </div>
                     </div>

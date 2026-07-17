@@ -17,6 +17,7 @@ def _send_booking_emails(booking):
     """Send booking notifications without risking the saved booking."""
     preferred_date = booking.preferred_date or "Not specified"
     message = booking.message or "Not provided"
+    advertised_price = booking.tour.price_summary
 
     admin_message = (
         "A new booking request was submitted.\n\n"
@@ -27,6 +28,7 @@ def _send_booking_emails(booking):
         f"Phone: {booking.phone}\n"
         f"Travellers: {booking.number_of_people}\n"
         f"Preferred date: {preferred_date}\n"
+        f"Advertised price: {advertised_price}\n"
         f"Message: {message}\n"
         f"Status: {booking.get_status_display()}"
     )
@@ -37,6 +39,7 @@ def _send_booking_emails(booking):
         f"We received your request for {booking.tour.title}.\n\n"
         f"Travellers: {booking.number_of_people}\n"
         f"Preferred date: {preferred_date}\n\n"
+        f"Advertised price: {advertised_price}\n\n"
         "Our team will review availability and contact you with the final "
         "itinerary, pricing and next steps. Your request is not confirmed "
         "until you approve the final plan.\n\n"

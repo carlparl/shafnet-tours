@@ -22,6 +22,7 @@
                 <dl>
                     <div><dt>Tour</dt><dd>{{ booking.tour.title }}</dd></div>
                     <div><dt>Travellers</dt><dd>{{ booking.number_of_people }}</dd></div>
+                    <div><dt>Advertised price</dt><dd>{{ booking.tour.price_summary }}</dd></div>
                     <div><dt>Preferred date</dt><dd>{{ booking.preferred_date|default:"Not specified" }}</dd></div>
                     <div><dt>Email</dt><dd>{{ booking.email }}</dd></div>
                     <div><dt>Phone</dt><dd>{{ booking.phone }}</dd></div>

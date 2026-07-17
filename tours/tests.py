@@ -28,7 +28,10 @@ class PublicSiteTests(TestCase):
         cls.domestic_tour = Tour.objects.create(
             title="Lake Mburo Weekend",
             description="A relaxed local escape with wildlife and landscapes.",
-            price=450,
+            price=450000,
+            currency="UGX",
+            price_basis="per_group",
+            price_is_from=False,
             duration_days=3,
             location="Lake Mburo",
             target_audience="domestic",
@@ -39,6 +42,9 @@ class PublicSiteTests(TestCase):
             title="Western Uganda Safari",
             description="A considered safari through western Uganda.",
             price=1800,
+            currency="USD",
+            price_basis="per_person",
+            price_is_from=True,
             duration_days=7,
             location="Western Uganda",
             target_audience="international",
@@ -74,12 +80,20 @@ class PublicSiteTests(TestCase):
 
         home_response = self.client.get(reverse("home"))
         self.assertContains(home_response, "How we plan your journey")
+        self.assertContains(home_response, "UGX 450,000 per group")
+        self.assertContains(home_response, "From USD 1,800 per person")
 
         about_response = self.client.get(reverse("about"))
         self.assertContains(
             about_response,
             "Your journey starts with being heard.",
         )
+
+        domestic_response = self.client.get(reverse("domestic_tours"))
+        self.assertContains(domestic_response, "UGX 450,000 per group")
+
+        self.assertContains(detail_response, "USD 1,800")
+        self.assertContains(detail_response, "per person")
 
     def test_booking_creates_record_sends_emails_and_confirms(self):
         response = self.client.post(
@@ -100,10 +114,13 @@ class PublicSiteTests(TestCase):
         self.assertRedirects(response, reverse("booking_confirmation"))
         self.assertEqual(Booking.objects.count(), 1)
         self.assertEqual(len(mail.outbox), 2)
+        for email in mail.outbox:
+            self.assertIn("From USD 1,800 per person", email.body)
 
         confirmation = self.client.get(reverse("booking_confirmation"))
         self.assertEqual(confirmation.status_code, 200)
         self.assertContains(confirmation, "Amina Traveller")
+        self.assertContains(confirmation, "From USD 1,800 per person")
 
     def test_booking_rejects_past_date(self):
         response = self.client.post(
