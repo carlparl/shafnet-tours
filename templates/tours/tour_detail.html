@@ -127,6 +127,15 @@
                 <h2>Request this tour</h2>
                 <p>Share your details and we will contact you to confirm availability, final pricing and next steps.</p>
 
+                <div class="booking-expectations" aria-label="What happens after you submit">
+                    <p class="booking-expectations-title">What happens next?</p>
+                    <ul>
+                        <li><span>1</span>We review your dates and requirements.</li>
+                        <li><span>2</span>We aim to reply within one business day.</li>
+                        <li><span>3</span>You approve the final itinerary and price.</li>
+                    </ul>
+                </div>
+
                 {% if form.non_field_errors %}
                     <div class="form-alert" role="alert">{{ form.non_field_errors }}</div>
                 {% endif %}
@@ -187,7 +196,10 @@
                     </label>
 
                     <button type="submit" class="button button-primary booking-submit">Send booking request</button>
-                    <p class="form-note">Submitting this form does not require payment. Our team will contact you before anything is confirmed.</p>
+                    <div class="booking-safety-note">
+                        <strong>No payment is required now.</strong>
+                        <span>Do not enter card or mobile-money details in this form. We will confirm availability and send a final quote before requesting payment.</span>
+                    </div>
                 </form>
             </div>
         </aside>
