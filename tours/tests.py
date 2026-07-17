@@ -78,6 +78,7 @@ class PublicSiteTests(TestCase):
                     timezone.localdate() + timedelta(days=30)
                 ),
                 "message": "Please share the available options.",
+                "accept_policies": "yes",
             },
         )
 
