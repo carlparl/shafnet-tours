@@ -72,6 +72,15 @@ class PublicSiteTests(TestCase):
         self.assertContains(detail_response, "google.com/maps")
         self.assertContains(detail_response, 'rel="canonical"')
 
+        home_response = self.client.get(reverse("home"))
+        self.assertContains(home_response, "How we plan your journey")
+
+        about_response = self.client.get(reverse("about"))
+        self.assertContains(
+            about_response,
+            "Your journey starts with being heard.",
+        )
+
     def test_booking_creates_record_sends_emails_and_confirms(self):
         response = self.client.post(
             reverse("tour_detail", args=[self.safari_tour.slug]),

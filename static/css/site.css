@@ -1862,6 +1862,102 @@ a {
     line-height: 1.7;
 }
 
+.journey-steps-section {
+    background: white;
+}
+
+.journey-steps-heading {
+    display: grid;
+    grid-template-columns: 1fr 0.7fr;
+    align-items: end;
+    gap: 60px;
+    margin-bottom: 34px;
+}
+
+.journey-steps-heading h2,
+.journey-promise-heading h2 {
+    margin: 10px 0 0;
+    font-size: clamp(34px, 4vw, 50px);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+}
+
+.journey-steps-heading > p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.journey-steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.journey-steps-grid article {
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    background: var(--green-50);
+    padding: 27px;
+}
+
+.journey-steps-grid article > span {
+    color: var(--green-700);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+}
+
+.journey-steps-grid h3 {
+    margin: 18px 0 0;
+    font-size: 21px;
+}
+
+.journey-steps-grid p {
+    margin: 10px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.journey-promise-grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: start;
+    gap: 80px;
+}
+
+.journey-promise-heading {
+    position: sticky;
+    top: 120px;
+}
+
+.journey-promise-copy {
+    border-left: 3px solid var(--green-600);
+    padding-left: 34px;
+}
+
+.journey-promise-copy p {
+    margin: 0 0 18px;
+    color: #405047;
+    font-size: 17px;
+    line-height: 1.85;
+}
+
+.text-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 8px;
+    color: var(--green-700);
+    font-size: 14px;
+    font-weight: 850;
+}
+
+.text-link:hover {
+    color: var(--green-900);
+}
+
 .about-intro-grid {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr;
@@ -2242,6 +2338,16 @@ a.contact-method:hover {
 }
 
 @media (max-width: 980px) {
+    .journey-steps-heading,
+    .journey-promise-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .journey-promise-heading {
+        position: static;
+    }
+
     .about-intro-grid,
     .about-choice-grid,
     .contact-grid {
@@ -2271,8 +2377,18 @@ a.contact-method:hover {
 
     .values-grid,
     .gallery-grid,
+    .journey-steps-grid,
     .contact-form-row {
         grid-template-columns: 1fr;
+    }
+
+    .journey-steps-heading {
+        margin-bottom: 26px;
+    }
+
+    .journey-promise-copy {
+        border-left-width: 2px;
+        padding-left: 20px;
     }
 
     .about-image-wrap {
