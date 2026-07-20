@@ -35,18 +35,25 @@
                 <ol>
                     <li><span>1</span><p>Our team reviews your dates and trip requirements.</p></li>
                     <li><span>2</span><p>We contact you to confirm availability, the itinerary and final pricing.</p></li>
-                    <li><span>3</span><p>Your booking is confirmed only after you approve the final plan and complete any stated confirmation requirement.</p></li>
+                    <li><span>3</span><p>Your booking is confirmed only after you approve the final plan.</p></li>
                 </ol>
             </div>
 
             <div class="confirmation-safety">
                 <strong>Payment safety</strong>
-                <p>This request does not require payment. Never send card details through the website form, and verify payment instructions using Shafnet's published contact details before transferring funds.</p>
+                <p>This request does not require payment. Never send card details through the website form, and verify payment instructions using Shafnet’s published contact details before transferring funds.</p>
             </div>
 
             <div class="confirmation-actions">
-                <a class="button button-primary" href="https://wa.me/256778221069?text=Hello%20Shafnet%20Tours%2C%20I%20submitted%20booking%20ST-{{ booking.pk|stringformat:'05d' }}%20for%20{{ booking.tour.title|urlencode }}.%20My%20name%20is%20{{ booking.full_name|urlencode }}." target="_blank" rel="noopener noreferrer">Continue on WhatsApp</a>
-                <a class="button button-secondary" href="{% url 'home' %}">Return to homepage</a>
+                <a class="button button-primary" href="https://wa.me/256778221069?text=Hello%20Shafnet%20Tours%2C%20I%20submitted%20booking%20ST-{{ booking.pk|stringformat:'05d' }}%20for%20{{ booking.tour.title|urlencode }}.%20My%20name%20is%20{{ booking.full_name|urlencode }}." target="_blank" rel="noopener noreferrer">
+                    Continue on WhatsApp
+                </a>
+                <a class="button button-secondary" href="tel:+256778221069">
+                    Call us: +256 778 221 069
+                </a>
+                <a class="button button-secondary" href="{% url 'home' %}">
+                    Return to homepage
+                </a>
             </div>
         </div>
     </div>

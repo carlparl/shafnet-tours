@@ -157,3 +157,20 @@ BOOKING_NOTIFICATION_EMAIL = os.getenv(
     "BOOKING_NOTIFICATION_EMAIL",
     "info@shafnettours.com",
 )
+
+# ===================== SENTRY (Error Tracking) =====================
+# Only activates when SENTRY_DSN is set in the environment.
+# Leave empty / unset during local development.
+SENTRY_DSN = os.getenv("SENTRY_DSN", "").strip()
+
+if SENTRY_DSN:
+    import sentry_sdk
+    from sentry_sdk.integrations.django import DjangoIntegration
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=0.1,          # 10% of transactions for performance
+        send_default_pii=False,          # Do not send personal data by default
+        environment="production" if not DEBUG else "development",
+    )
