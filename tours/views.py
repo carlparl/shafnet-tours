@@ -44,7 +44,7 @@ def _send_booking_emails(booking):
         "itinerary, pricing and next steps. Your request is not confirmed "
         "until you approve the final plan.\n\n"
         "Shafnet Tours & Travel Ltd\n"
-        "+256 778 221 069"
+        "+256 789 472229"
     )
 
     try:
@@ -89,7 +89,7 @@ def _send_contact_emails(contact_message):
         "using the contact details you provided.\n\n"
         f"Subject: {subject}\n\n"
         "Shafnet Tours & Travel Ltd\n"
-        "+256 778 221 069"
+        "+256 789 472229"
     )
 
     try:

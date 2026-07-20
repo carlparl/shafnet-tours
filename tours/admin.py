@@ -48,7 +48,7 @@ def send_booking_status_email(booking):
         f"Status: {booking.get_status_display()}\n\n"
         f"{status_message}\n\n"
         "Shafnet Tours & Travel Ltd\n"
-        "+256 778 221 069"
+        "+256 789 472229"
     )
 
     try:

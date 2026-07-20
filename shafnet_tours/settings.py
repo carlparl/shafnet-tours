@@ -151,11 +151,11 @@ EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "15"))
 DEFAULT_FROM_EMAIL = os.getenv(
     "DEFAULT_FROM_EMAIL",
-    "Shafnet Tours <info@shafnettours.com>",
+    "Shafnet Tours <shafnettours@gmail.com>",
 )
 BOOKING_NOTIFICATION_EMAIL = os.getenv(
     "BOOKING_NOTIFICATION_EMAIL",
-    "info@shafnettours.com",
+    "shafnettours@gmail.com",
 )
 
 # ===================== SENTRY (Error Tracking) =====================
