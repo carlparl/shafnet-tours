@@ -5,6 +5,21 @@ from .models import Booking, ContactMessage
 
 
 class BookingForm(forms.ModelForm):
+    # Honeypot field – real users never see or fill this.
+    # Bots often fill every field, so we reject submissions that contain a value.
+    website = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "off",
+                "tabindex": "-1",
+                "aria-hidden": "true",
+                "style": "position:absolute;left:-9999px;height:0;width:0;opacity:0;",
+            }
+        ),
+    )
+
     class Meta:
         model = Booking
         fields = [
@@ -73,8 +88,31 @@ class BookingForm(forms.ModelForm):
             )
         return preferred_date
 
+    def clean(self):
+        cleaned_data = super().clean()
+        # Reject if honeypot was filled (bots)
+        if cleaned_data.get("website"):
+            raise forms.ValidationError(
+                "Unable to process your request. Please try again."
+            )
+        return cleaned_data
+
 
 class ContactForm(forms.ModelForm):
+    # Honeypot field – real users never see or fill this.
+    website = forms.CharField(
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "off",
+                "tabindex": "-1",
+                "aria-hidden": "true",
+                "style": "position:absolute;left:-9999px;height:0;width:0;opacity:0;",
+            }
+        ),
+    )
+
     class Meta:
         model = ContactMessage
         fields = ["full_name", "email", "subject", "message"]
@@ -84,3 +122,11 @@ class ContactForm(forms.ModelForm):
             "subject": forms.TextInput(attrs={"class": "form-field"}),
             "message": forms.Textarea(attrs={"class": "form-field", "rows": 6}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if cleaned_data.get("website"):
+            raise forms.ValidationError(
+                "Unable to process your request. Please try again."
+            )
+        return cleaned_data

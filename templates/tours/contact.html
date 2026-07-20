@@ -65,6 +65,7 @@
 
                 <form method="post" class="contact-form" novalidate>
                     {% csrf_token %}
+                    {{ form.website }}
                     <div class="contact-form-row">
                         <div class="form-group">
                             <label for="{{ form.full_name.id_for_label }}">Full name <span>*</span></label>

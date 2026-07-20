@@ -182,6 +182,7 @@
 
                 <form method="post" class="booking-form" novalidate>
                     {% csrf_token %}
+                    {{ form.website }}
                     <div class="form-group">
                         <label for="{{ form.full_name.id_for_label }}">Full name <span>*</span></label>
                         {{ form.full_name }}
