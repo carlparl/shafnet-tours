@@ -86,7 +86,17 @@ class Tour(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            base_slug = slugify(self.title) or "tour"
+            candidate = base_slug
+            suffix = 2
+            queryset = type(self).objects.exclude(pk=self.pk)
+
+            while queryset.filter(slug=candidate).exists():
+                candidate = f"{base_slug}-{suffix}"
+                suffix += 1
+
+            self.slug = candidate
+
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):

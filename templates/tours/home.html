@@ -1,29 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Shafnet Tours | Uganda Tours & Safaris
-<script>
-    (() => {
-        const hero = document.querySelector('.hero');
-        if (!hero) return;
-
-        const updateAnimationState = () => {
-            hero.classList.toggle('hero-animation-paused', document.hidden);
-        };
-
-        document.addEventListener('visibilitychange', updateAnimationState);
-        updateAnimationState();
-    })();
-</script>
-
-{% endblock %}
+{% block title %}Shafnet Tours | Uganda Tours & Safaris{% endblock %}
 {% block meta_description %}Explore Uganda through professionally planned domestic tours, wildlife safaris and custom travel experiences with Shafnet Tours.{% endblock %}
 
 {% block content %}
 <section class="hero">
     <div class="hero-slides" aria-hidden="true">
-        <span class="hero-slide hero-slide-1"></span>
-        <span class="hero-slide hero-slide-2"></span>
-        <span class="hero-slide hero-slide-3"></span>
+        <span
+            class="hero-slide hero-slide-1"
+            {% if safari_tours.0.image %}style="--hero-image: url('{{ safari_tours.0.image.url }}');"{% endif %}
+        ></span>
+        <span
+            class="hero-slide hero-slide-2"
+            {% if domestic_tours.0.image %}style="--hero-image: url('{{ domestic_tours.0.image.url }}');"{% endif %}
+        ></span>
+        <span
+            class="hero-slide hero-slide-3"
+            {% if destinations.0.image %}style="--hero-image: url('{{ destinations.0.image.url }}');"{% endif %}
+        ></span>
     </div>
     <div class="container hero-inner">
         <div class="hero-copy">
@@ -31,8 +25,8 @@
             <h1>Uganda, thoughtfully explored.</h1>
             <p class="hero-intro">From refreshing local escapes to unforgettable wildlife safaris, Shafnet plans journeys around how you want to travel.</p>
             <div class="hero-actions">
-                <a class="button button-light" href="{% url 'domestic_tours' %}">Explore domestic tours</a>
-                <a class="button button-outline-light" href="{% url 'safaris' %}">Explore Uganda safaris</a>
+                <a class="button button-light" data-conversion="hero-domestic-tours" href="{% url 'domestic_tours' %}">Explore domestic tours</a>
+                <a class="button button-outline-light" data-conversion="hero-safaris" href="{% url 'safaris' %}">Explore Uganda safaris</a>
             </div>
         </div>
     </div>
@@ -224,8 +218,24 @@
     <div class="container final-cta">
         <p class="eyebrow eyebrow-light">Your journey starts here</p>
         <h2>Have a trip in mind?</h2>
-        <p>Share your dates, interests and group size. We will help turn the idea into a clear travel plan.</p>
-        <a class="button button-light" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Start planning on WhatsApp</a>
+        <p>Share your dates, interests and group size. We aim to reply within one business day, and no payment is required to start planning.</p>
+        <a class="button button-light" data-conversion="homepage-final-whatsapp" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Start planning on WhatsApp</a>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (() => {
+        const hero = document.querySelector('.hero');
+        if (!hero) return;
+
+        const updateAnimationState = () => {
+            hero.classList.toggle('hero-animation-paused', document.hidden);
+        };
+
+        document.addEventListener('visibilitychange', updateAnimationState);
+        updateAnimationState();
+    })();
+</script>
 {% endblock %}

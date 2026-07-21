@@ -22,7 +22,7 @@
     <link rel="apple-touch-icon" href="{% static 'favicon.png' %}">
     <link rel="stylesheet" href="{% static 'css/contact-icons.css' %}">
     <link rel="stylesheet" href="{% static 'css/morph-effects.css' %}">
-    <link rel="stylesheet" href="{% static 'css/card-morph.css' %}">
+    <link rel="stylesheet" href="{% static 'css/site-polish.css' %}">
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -109,26 +109,26 @@
             </button>
 
             <div class="desktop-nav">
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'domestic_tours' %}">Domestic tours</a>
-                <a href="{% url 'safaris' %}">Safaris</a>
-                <a href="{% url 'gallery' %}">Gallery</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'contact' %}">Contact</a>
+                <a href="{% url 'home' %}"{% if request.resolver_match.url_name == "home" %} class="is-active" aria-current="page"{% endif %}>Home</a>
+                <a href="{% url 'domestic_tours' %}"{% if request.resolver_match.url_name == "domestic_tours" %} class="is-active" aria-current="page"{% endif %}>Domestic tours</a>
+                <a href="{% url 'safaris' %}"{% if request.resolver_match.url_name == "safaris" %} class="is-active" aria-current="page"{% endif %}>Safaris</a>
+                <a href="{% url 'gallery' %}"{% if request.resolver_match.url_name == "gallery" %} class="is-active" aria-current="page"{% endif %}>Gallery</a>
+                <a href="{% url 'about' %}"{% if request.resolver_match.url_name == "about" %} class="is-active" aria-current="page"{% endif %}>About</a>
+                <a href="{% url 'contact' %}"{% if request.resolver_match.url_name == "contact" %} class="is-active" aria-current="page"{% endif %}>Contact</a>
             </div>
 
-            <a class="button button-primary header-cta" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Plan a trip</a>
+            <a class="button button-primary header-cta" data-conversion="header-whatsapp" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Plan a trip</a>
         </nav>
 
         <div class="mobile-nav" id="mobile-menu" hidden>
             <div class="container mobile-nav-inner">
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'domestic_tours' %}">Domestic tours</a>
-                <a href="{% url 'safaris' %}">Safaris</a>
-                <a href="{% url 'gallery' %}">Gallery</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'contact' %}">Contact</a>
-                <a class="button button-primary" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Plan a trip</a>
+                <a href="{% url 'home' %}"{% if request.resolver_match.url_name == "home" %} class="is-active" aria-current="page"{% endif %}>Home</a>
+                <a href="{% url 'domestic_tours' %}"{% if request.resolver_match.url_name == "domestic_tours" %} class="is-active" aria-current="page"{% endif %}>Domestic tours</a>
+                <a href="{% url 'safaris' %}"{% if request.resolver_match.url_name == "safaris" %} class="is-active" aria-current="page"{% endif %}>Safaris</a>
+                <a href="{% url 'gallery' %}"{% if request.resolver_match.url_name == "gallery" %} class="is-active" aria-current="page"{% endif %}>Gallery</a>
+                <a href="{% url 'about' %}"{% if request.resolver_match.url_name == "about" %} class="is-active" aria-current="page"{% endif %}>About</a>
+                <a href="{% url 'contact' %}"{% if request.resolver_match.url_name == "contact" %} class="is-active" aria-current="page"{% endif %}>Contact</a>
+                <a class="button button-primary" data-conversion="mobile-whatsapp" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Plan a trip</a>
             </div>
         </div>
     </header>
@@ -147,7 +147,7 @@
             </div>
             <div>
                 <h2>Explore</h2>
-                <a href="{% url 'domestic_tours' %}">Domestic tours</a>
+                <a href="{% url 'domestic_tours' %}"{% if request.resolver_match.url_name == "domestic_tours" %} class="is-active" aria-current="page"{% endif %}>Domestic tours</a>
                 <a href="{% url 'safaris' %}">Uganda safaris</a>
                 <a href="{% url 'gallery' %}">Travel gallery</a>
                 <a href="{% url 'about' %}">About Shafnet</a>
@@ -181,9 +181,11 @@
         </div>
     </footer>
 
-    <a class="whatsapp-float" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer" aria-label="Chat with Shafnet Tours on WhatsApp">
+    <a class="whatsapp-float" data-conversion="floating-whatsapp" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer" aria-label="Chat with Shafnet Tours on WhatsApp">
         <svg class="ui-icon whatsapp-mark" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>
     </a>
+
+    {% block extra_scripts %}{% endblock %}
 
     <script>
         (() => {
@@ -205,5 +207,29 @@
             });
         })();
     </script>
+
+    <script>
+        (() => {
+            document.addEventListener('click', (event) => {
+                const target = event.target.closest('[data-conversion]');
+                if (!target) return;
+
+                const detail = {
+                    event: 'shafnet_conversion',
+                    conversion_name: target.dataset.conversion,
+                    page_path: window.location.pathname
+                };
+
+                window.dispatchEvent(
+                    new CustomEvent('shafnet:conversion', { detail })
+                );
+
+                if (Array.isArray(window.dataLayer)) {
+                    window.dataLayer.push(detail);
+                }
+            });
+        })();
+    </script>
+
 </body>
 </html>

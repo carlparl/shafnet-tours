@@ -173,6 +173,116 @@ class PublicSiteTests(TestCase):
         self.assertEqual(ContactMessage.objects.count(), 0)
         self.assertEqual(len(mail.outbox), 0)
 
+
+    def test_homepage_title_and_motion_markup_are_valid(self):
+        response = self.client.get(reverse("home"))
+
+        self.assertContains(
+            response,
+            "<title>Shafnet Tours | Uganda Tours &amp; Safaris</title>",
+            html=True,
+        )
+        self.assertNotContains(response, "<title><script")
+        self.assertContains(response, 'class="hero-slides"')
+        self.assertEqual(
+            response.content.decode().count("hero-slide hero-slide-"),
+            3,
+        )
+        self.assertNotContains(response, "images.unsplash.com")
+        self.assertContains(response, 'class="is-active" aria-current="page"')
+
+    def test_booking_requires_policy_consent(self):
+        response = self.client.post(
+            reverse("tour_detail", args=[self.safari_tour.slug]),
+            {
+                "full_name": "Amina Traveller",
+                "email": "amina@example.com",
+                "phone": "+256700000000",
+                "number_of_people": 2,
+                "preferred_date": (
+                    timezone.localdate() + timedelta(days=30)
+                ),
+                "message": "Please share the available options.",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Please accept the Terms, Booking Policy and Privacy Policy.",
+        )
+        self.assertEqual(Booking.objects.count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_booking_honeypot_rejects_bot_submission(self):
+        response = self.client.post(
+            reverse("tour_detail", args=[self.safari_tour.slug]),
+            {
+                "full_name": "Automated Submission",
+                "email": "bot@example.com",
+                "phone": "+256700000000",
+                "number_of_people": 2,
+                "preferred_date": (
+                    timezone.localdate() + timedelta(days=30)
+                ),
+                "message": "Automated message.",
+                "website": "https://spam.invalid",
+                "accept_policies": "yes",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Booking.objects.count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_contact_honeypot_rejects_bot_submission(self):
+        response = self.client.post(
+            reverse("contact"),
+            {
+                "full_name": "Automated Submission",
+                "email": "bot@example.com",
+                "subject": "Spam",
+                "message": "Automated message.",
+                "website": "https://spam.invalid",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ContactMessage.objects.count(), 0)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_duplicate_tour_titles_receive_unique_slugs(self):
+        first = Tour.objects.create(
+            title="Murchison Falls Safari",
+            description="First itinerary.",
+            duration_days=3,
+            location="Murchison Falls",
+        )
+        second = Tour.objects.create(
+            title="Murchison Falls Safari",
+            description="Second itinerary.",
+            duration_days=4,
+            location="Murchison Falls",
+        )
+
+        self.assertEqual(first.slug, "murchison-falls-safari")
+        self.assertEqual(second.slug, "murchison-falls-safari-2")
+
+    def test_empty_homepage_catalogue_states_render(self):
+        Tour.objects.all().delete()
+
+        response = self.client.get(reverse("home"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Domestic experiences are being prepared",
+        )
+        self.assertContains(
+            response,
+            "Your ideal safari can start here",
+        )
+
     def test_sitemap_and_robots_are_available(self):
         sitemap_response = self.client.get("/sitemap.xml")
         self.assertEqual(sitemap_response.status_code, 200)

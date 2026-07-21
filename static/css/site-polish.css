@@ -1,0 +1,78 @@
+/* Shafnet interface polish */
+
+.topbar {
+    font-size: 13px;
+}
+
+.topbar-inner {
+    min-height: 40px;
+}
+
+.desktop-nav a,
+.mobile-nav a {
+    position: relative;
+}
+
+.desktop-nav a.is-active {
+    background: var(--green-50);
+    color: var(--green-900);
+}
+
+.desktop-nav a.is-active::after {
+    position: absolute;
+    right: 12px;
+    bottom: 4px;
+    left: 12px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--green-600);
+    content: "";
+}
+
+.mobile-nav a.is-active {
+    background: var(--green-50);
+    color: var(--green-900);
+    font-weight: 800;
+}
+
+.footer-bottom {
+    font-size: 13px;
+}
+
+.footer-bottom span:first-child {
+    color: #d9f9e4;
+    font-weight: 750;
+}
+
+.footer-bottom span:last-child {
+    color: #95cfa7;
+}
+
+.hero-slide {
+    background-color: var(--green-950);
+}
+
+.hero-slide[style] {
+    background-position: center;
+    background-size: cover;
+}
+
+.final-cta > p {
+    max-width: 720px;
+}
+
+@media (max-width: 640px) {
+    .topbar {
+        font-size: 12px;
+    }
+
+    .topbar-inner {
+        min-height: 38px;
+    }
+
+    .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+        font-size: 12px;
+    }
+}
