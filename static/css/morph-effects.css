@@ -1,0 +1,148 @@
+/* Shafnet organic motion enhancements.
+   Motion is decorative only and is disabled for reduced-motion users. */
+
+.hero::before {
+    position: absolute;
+    top: 8%;
+    right: clamp(-170px, -8vw, -80px);
+    z-index: 0;
+    width: clamp(320px, 42vw, 620px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 42% 58% 67% 33% / 43% 42% 58% 57%;
+    background:
+        radial-gradient(circle at 32% 28%, rgba(187, 247, 208, 0.48), transparent 28%),
+        radial-gradient(circle at 64% 68%, rgba(34, 197, 94, 0.30), transparent 38%),
+        rgba(255, 255, 255, 0.06);
+    box-shadow:
+        inset 0 0 90px rgba(255, 255, 255, 0.10),
+        0 30px 90px rgba(5, 46, 27, 0.24);
+    content: "";
+    pointer-events: none;
+    animation: shafnet-hero-morph 14s ease-in-out infinite alternate;
+}
+
+.hero-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.tour-card {
+    position: relative;
+    isolation: isolate;
+}
+
+.tour-card::before {
+    position: absolute;
+    top: -92px;
+    right: -78px;
+    z-index: 0;
+    width: 180px;
+    height: 180px;
+    border-radius: 44% 56% 63% 37% / 43% 38% 62% 57%;
+    background: radial-gradient(circle at 35% 35%, rgba(134, 239, 172, 0.65), rgba(21, 128, 61, 0.08) 67%);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.72) rotate(-10deg);
+    transition: opacity 0.35s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tour-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.tour-card:hover,
+.tour-card:focus-within {
+    border-radius: 34px 24px 38px 26px / 26px 38px 24px 36px;
+    animation: shafnet-card-morph 4.8s ease-in-out infinite alternate;
+}
+
+.tour-card:hover::before,
+.tour-card:focus-within::before {
+    opacity: 0.42;
+    transform: scale(1) rotate(7deg);
+    animation: shafnet-blob-morph 5.5s ease-in-out infinite alternate;
+}
+
+.journey-steps-grid article,
+.destination-card,
+.testimonial-grid figure,
+.final-cta {
+    transition:
+        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.55s ease,
+        box-shadow 0.35s ease;
+}
+
+.journey-steps-grid article:hover,
+.destination-card:hover,
+.testimonial-grid figure:hover {
+    transform: translateY(-5px);
+    border-radius: 30px 22px 34px 24px / 24px 34px 22px 32px;
+}
+
+@keyframes shafnet-hero-morph {
+    0% {
+        border-radius: 42% 58% 67% 33% / 43% 42% 58% 57%;
+        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+    50% {
+        border-radius: 58% 42% 35% 65% / 55% 64% 36% 45%;
+        transform: translate3d(-18px, 14px, 0) rotate(5deg) scale(1.04);
+    }
+    100% {
+        border-radius: 35% 65% 57% 43% / 63% 38% 62% 37%;
+        transform: translate3d(12px, -8px, 0) rotate(-4deg) scale(0.98);
+    }
+}
+
+@keyframes shafnet-card-morph {
+    0% {
+        border-radius: 34px 24px 38px 26px / 26px 38px 24px 36px;
+    }
+    100% {
+        border-radius: 24px 38px 26px 36px / 36px 24px 38px 26px;
+    }
+}
+
+@keyframes shafnet-blob-morph {
+    0% {
+        border-radius: 44% 56% 63% 37% / 43% 38% 62% 57%;
+    }
+    100% {
+        border-radius: 63% 37% 42% 58% / 56% 61% 39% 44%;
+    }
+}
+
+@media (max-width: 760px) {
+    .hero::before {
+        top: 18%;
+        right: -210px;
+        width: 430px;
+        opacity: 0.58;
+    }
+
+    .tour-card:hover,
+    .tour-card:focus-within {
+        animation-duration: 6s;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero::before,
+    .tour-card,
+    .tour-card::before {
+        animation: none !important;
+    }
+
+    .journey-steps-grid article,
+    .destination-card,
+    .testimonial-grid figure,
+    .final-cta,
+    .tour-card,
+    .tour-card::before {
+        transition-duration: 0.01ms !important;
+    }
+}
