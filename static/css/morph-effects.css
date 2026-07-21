@@ -1,25 +1,34 @@
-/* Shafnet organic motion enhancements.
-   Motion is decorative only and is disabled for reduced-motion users. */
+/* Shafnet cinematic morph system
+   Strong visual impact with controlled, premium motion.
+   Decorative movement automatically stops for reduced-motion users. */
 
-.hero::before {
+:root {
+    --morph-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --morph-green: rgba(34, 197, 94, 0.34);
+    --morph-lime: rgba(187, 247, 208, 0.52);
+    --morph-deep: rgba(5, 46, 27, 0.32);
+}
+
+/* ---------- HOMEPAGE HERO ---------- */
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.hero::after {
     position: absolute;
-    top: 8%;
-    right: clamp(-170px, -8vw, -80px);
-    z-index: 0;
-    width: clamp(320px, 42vw, 620px);
-    aspect-ratio: 1;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 42% 58% 67% 33% / 43% 42% 58% 57%;
-    background:
-        radial-gradient(circle at 32% 28%, rgba(187, 247, 208, 0.48), transparent 28%),
-        radial-gradient(circle at 64% 68%, rgba(34, 197, 94, 0.30), transparent 38%),
-        rgba(255, 255, 255, 0.06);
-    box-shadow:
-        inset 0 0 90px rgba(255, 255, 255, 0.10),
-        0 30px 90px rgba(5, 46, 27, 0.24);
+    inset: 0;
+    z-index: -1;
     content: "";
+    background:
+        radial-gradient(circle at 78% 18%, rgba(134, 239, 172, 0.24), transparent 24%),
+        radial-gradient(circle at 92% 78%, rgba(34, 197, 94, 0.20), transparent 30%),
+        linear-gradient(0deg, rgba(5, 46, 27, 0.52), transparent 43%);
+    background-size: 125% 125%, 145% 145%, 100% 100%;
+    animation: shafnet-light-drift 11s ease-in-out infinite alternate;
     pointer-events: none;
-    animation: shafnet-hero-morph 14s ease-in-out infinite alternate;
 }
 
 .hero-inner {
@@ -27,25 +36,135 @@
     z-index: 1;
 }
 
+.hero-inner::before {
+    position: absolute;
+    top: 50%;
+    right: clamp(-120px, -4vw, -35px);
+    width: clamp(370px, 43vw, 640px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    border-radius: 38% 62% 66% 34% / 45% 38% 62% 55%;
+    background:
+        radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.28), transparent 24%),
+        radial-gradient(circle at 67% 72%, rgba(34, 197, 94, 0.30), transparent 39%),
+        linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(22, 163, 74, 0.05));
+    box-shadow:
+        inset 0 0 95px rgba(255, 255, 255, 0.10),
+        0 42px 110px rgba(5, 46, 27, 0.34);
+    content: "";
+    opacity: 0.92;
+    transform: translateY(-50%);
+    animation: shafnet-hero-morph 12s var(--morph-ease) infinite alternate;
+    pointer-events: none;
+    will-change: transform, border-radius;
+}
+
+.hero-inner::after {
+    position: absolute;
+    top: 50%;
+    right: clamp(8px, 5vw, 82px);
+    width: clamp(240px, 27vw, 405px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(220, 252, 231, 0.38);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 28px rgba(255, 255, 255, 0.035),
+        0 0 0 58px rgba(134, 239, 172, 0.025);
+    content: "";
+    opacity: 0.74;
+    transform: translateY(-50%);
+    animation: shafnet-orbit-ring 9s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.hero-copy {
+    position: relative;
+    z-index: 3;
+}
+
+.hero-label,
+.hero h1,
+.hero-intro,
+.hero-actions {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: shafnet-copy-rise 850ms var(--morph-ease) forwards;
+}
+
+.hero-label {
+    animation-delay: 120ms;
+}
+
+.hero h1 {
+    animation-delay: 240ms;
+}
+
+.hero-intro {
+    animation-delay: 380ms;
+}
+
+.hero-actions {
+    animation-delay: 520ms;
+}
+
+/* ---------- TOUR CARDS ---------- */
+
 .tour-card {
     position: relative;
     isolation: isolate;
+    overflow: hidden;
+    border-radius: 28px;
+    transform: translateZ(0);
+    transition:
+        transform 440ms var(--morph-ease),
+        border-radius 560ms var(--morph-ease),
+        border-color 300ms ease,
+        box-shadow 440ms var(--morph-ease);
+    will-change: transform;
 }
 
 .tour-card::before {
     position: absolute;
-    top: -92px;
-    right: -78px;
+    top: -110px;
+    right: -100px;
     z-index: 0;
-    width: 180px;
-    height: 180px;
-    border-radius: 44% 56% 63% 37% / 43% 38% 62% 57%;
-    background: radial-gradient(circle at 35% 35%, rgba(134, 239, 172, 0.65), rgba(21, 128, 61, 0.08) 67%);
+    width: 230px;
+    height: 230px;
+    border-radius: 42% 58% 63% 37% / 44% 38% 62% 56%;
+    background:
+        radial-gradient(circle at 35% 34%, var(--morph-lime), transparent 28%),
+        radial-gradient(circle at 64% 68%, var(--morph-green), transparent 48%);
+    content: "";
+    opacity: 0.16;
+    pointer-events: none;
+    transform: rotate(-14deg) scale(0.9);
+    transition:
+        opacity 380ms ease,
+        transform 650ms var(--morph-ease);
+    animation: shafnet-card-halo 7s ease-in-out infinite alternate;
+}
+
+.tour-card::after {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    border-radius: inherit;
+    background:
+        linear-gradient(
+            112deg,
+            transparent 24%,
+            rgba(255, 255, 255, 0.08) 37%,
+            rgba(255, 255, 255, 0.55) 48%,
+            rgba(255, 255, 255, 0.10) 58%,
+            transparent 72%
+        );
     content: "";
     opacity: 0;
     pointer-events: none;
-    transform: scale(0.72) rotate(-10deg);
-    transition: opacity 0.35s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateX(-86%);
+    transition:
+        opacity 240ms ease,
+        transform 850ms var(--morph-ease);
 }
 
 .tour-card > * {
@@ -53,96 +172,334 @@
     z-index: 1;
 }
 
+.card-grid .tour-card {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+    animation: shafnet-card-enter 760ms var(--morph-ease) forwards;
+}
+
+.card-grid .tour-card:nth-child(2) {
+    animation-delay: 110ms;
+}
+
+.card-grid .tour-card:nth-child(3) {
+    animation-delay: 220ms;
+}
+
+.card-grid .tour-card:nth-child(4) {
+    animation-delay: 330ms;
+}
+
+.card-grid .tour-card:nth-child(5) {
+    animation-delay: 440ms;
+}
+
+.card-grid .tour-card:nth-child(6) {
+    animation-delay: 550ms;
+}
+
 .tour-card:hover,
 .tour-card:focus-within {
-    border-radius: 34px 24px 38px 26px / 26px 38px 24px 36px;
-    animation: shafnet-card-morph 4.8s ease-in-out infinite alternate;
+    transform:
+        perspective(1100px)
+        translateY(-11px)
+        rotateX(1.4deg)
+        rotateY(-1.2deg)
+        scale(1.012);
+    border-color: rgba(34, 197, 94, 0.34);
+    border-radius: 34px 24px 40px 28px / 28px 40px 24px 36px;
+    box-shadow:
+        0 34px 68px rgba(5, 46, 27, 0.18),
+        0 14px 30px rgba(21, 128, 61, 0.10),
+        0 0 0 1px rgba(134, 239, 172, 0.24);
 }
 
 .tour-card:hover::before,
 .tour-card:focus-within::before {
-    opacity: 0.42;
-    transform: scale(1) rotate(7deg);
-    animation: shafnet-blob-morph 5.5s ease-in-out infinite alternate;
+    opacity: 0.62;
+    transform: rotate(12deg) scale(1.16);
+    animation: shafnet-card-morph 3.8s ease-in-out infinite alternate;
 }
+
+.tour-card:hover::after,
+.tour-card:focus-within::after {
+    opacity: 0.58;
+    transform: translateX(86%);
+}
+
+.card-image-wrap {
+    overflow: hidden;
+    transition:
+        border-radius 560ms var(--morph-ease),
+        transform 500ms var(--morph-ease);
+}
+
+.tour-card:hover .card-image-wrap,
+.tour-card:focus-within .card-image-wrap {
+    border-radius: 0 0 42px 0;
+    transform: translateZ(18px);
+}
+
+.card-image-wrap img {
+    transition:
+        transform 900ms var(--morph-ease),
+        filter 420ms ease;
+}
+
+.tour-card:hover .card-image-wrap img,
+.tour-card:focus-within .card-image-wrap img {
+    transform: scale(1.07);
+    filter: saturate(1.08) contrast(1.035);
+}
+
+.card-badge {
+    transition:
+        transform 360ms var(--morph-ease),
+        background-color 300ms ease,
+        box-shadow 360ms ease;
+}
+
+.tour-card:hover .card-badge,
+.tour-card:focus-within .card-badge {
+    transform: translateY(-2px) scale(1.045);
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 12px 25px rgba(5, 46, 27, 0.18);
+}
+
+.card-footer a {
+    transition:
+        transform 300ms var(--morph-ease),
+        color 300ms ease;
+}
+
+.tour-card:hover .card-footer a,
+.tour-card:focus-within .card-footer a {
+    transform: translateX(4px);
+}
+
+/* ---------- SUPPORTING HOMEPAGE CARDS ---------- */
 
 .journey-steps-grid article,
 .destination-card,
 .testimonial-grid figure,
 .final-cta {
+    position: relative;
+    overflow: hidden;
     transition:
-        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-        border-radius 0.55s ease,
-        box-shadow 0.35s ease;
+        transform 390ms var(--morph-ease),
+        border-radius 520ms var(--morph-ease),
+        border-color 300ms ease,
+        box-shadow 390ms var(--morph-ease);
+}
+
+.journey-steps-grid article::after,
+.destination-card::after,
+.testimonial-grid figure::after {
+    position: absolute;
+    inset: auto -70px -95px auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 46% 54% 65% 35% / 54% 41% 59% 46%;
+    background: radial-gradient(circle, rgba(134, 239, 172, 0.35), transparent 66%);
+    content: "";
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.75);
+    transition:
+        opacity 350ms ease,
+        transform 520ms var(--morph-ease);
 }
 
 .journey-steps-grid article:hover,
+.journey-steps-grid article:focus-within,
 .destination-card:hover,
-.testimonial-grid figure:hover {
-    transform: translateY(-5px);
-    border-radius: 30px 22px 34px 24px / 24px 34px 22px 32px;
+.destination-card:focus-within,
+.testimonial-grid figure:hover,
+.testimonial-grid figure:focus-within {
+    transform: translateY(-7px) scale(1.008);
+    border-color: rgba(34, 197, 94, 0.28);
+    border-radius: 32px 24px 36px 26px / 26px 36px 24px 32px;
+    box-shadow: 0 28px 58px rgba(5, 46, 27, 0.14);
+}
+
+.journey-steps-grid article:hover::after,
+.journey-steps-grid article:focus-within::after,
+.destination-card:hover::after,
+.destination-card:focus-within::after,
+.testimonial-grid figure:hover::after,
+.testimonial-grid figure:focus-within::after {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* ---------- KEYFRAMES ---------- */
+
+@keyframes shafnet-light-drift {
+    0% {
+        background-position: 70% 15%, 90% 78%, center;
+    }
+
+    100% {
+        background-position: 86% 28%, 76% 62%, center;
+    }
 }
 
 @keyframes shafnet-hero-morph {
     0% {
-        border-radius: 42% 58% 67% 33% / 43% 42% 58% 57%;
-        transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+        border-radius: 38% 62% 66% 34% / 45% 38% 62% 55%;
+        transform: translateY(-50%) rotate(-5deg) scale(0.96);
     }
-    50% {
-        border-radius: 58% 42% 35% 65% / 55% 64% 36% 45%;
-        transform: translate3d(-18px, 14px, 0) rotate(5deg) scale(1.04);
+
+    35% {
+        border-radius: 58% 42% 38% 62% / 52% 62% 38% 48%;
+        transform: translate(-18px, -52%) rotate(3deg) scale(1.04);
     }
+
+    70% {
+        border-radius: 44% 56% 64% 36% / 64% 42% 58% 36%;
+        transform: translate(10px, -48%) rotate(7deg) scale(1);
+    }
+
     100% {
-        border-radius: 35% 65% 57% 43% / 63% 38% 62% 37%;
-        transform: translate3d(12px, -8px, 0) rotate(-4deg) scale(0.98);
+        border-radius: 64% 36% 46% 54% / 38% 58% 42% 62%;
+        transform: translate(-6px, -51%) rotate(-2deg) scale(1.06);
+    }
+}
+
+@keyframes shafnet-orbit-ring {
+    0% {
+        transform: translateY(-50%) rotate(0deg) scale(0.92);
+        opacity: 0.42;
+    }
+
+    100% {
+        transform: translate(-18px, -53%) rotate(18deg) scale(1.08);
+        opacity: 0.86;
+    }
+}
+
+@keyframes shafnet-copy-rise {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shafnet-card-enter {
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes shafnet-card-halo {
+    0% {
+        border-radius: 42% 58% 63% 37% / 44% 38% 62% 56%;
+        transform: rotate(-14deg) scale(0.9);
+    }
+
+    100% {
+        border-radius: 63% 37% 44% 56% / 57% 62% 38% 43%;
+        transform: rotate(-5deg) scale(1.02);
     }
 }
 
 @keyframes shafnet-card-morph {
     0% {
-        border-radius: 34px 24px 38px 26px / 26px 38px 24px 36px;
+        border-radius: 42% 58% 63% 37% / 44% 38% 62% 56%;
     }
+
     100% {
-        border-radius: 24px 38px 26px 36px / 36px 24px 38px 26px;
+        border-radius: 67% 33% 46% 54% / 58% 65% 35% 42%;
     }
 }
 
-@keyframes shafnet-blob-morph {
-    0% {
-        border-radius: 44% 56% 63% 37% / 43% 38% 62% 57%;
+/* ---------- RESPONSIVE + ACCESSIBILITY ---------- */
+
+@media (max-width: 900px) {
+    .hero-inner::before {
+        right: -180px;
+        width: 520px;
+        opacity: 0.76;
     }
-    100% {
-        border-radius: 63% 37% 42% 58% / 56% 61% 39% 44%;
+
+    .hero-inner::after {
+        right: -35px;
+        width: 300px;
+        opacity: 0.54;
     }
 }
 
-@media (max-width: 760px) {
-    .hero::before {
-        top: 18%;
-        right: -210px;
-        width: 430px;
-        opacity: 0.58;
+@media (max-width: 680px) {
+    .hero-inner::before {
+        top: 58%;
+        right: -255px;
+        width: 470px;
+        opacity: 0.62;
+    }
+
+    .hero-inner::after {
+        display: none;
     }
 
     .tour-card:hover,
     .tour-card:focus-within {
-        animation-duration: 6s;
+        transform: translateY(-6px) scale(1.004);
+        border-radius: 30px;
+    }
+
+    .tour-card:hover .card-image-wrap,
+    .tour-card:focus-within .card-image-wrap {
+        border-radius: 0;
+    }
+}
+
+@media (hover: none) {
+    .tour-card:hover {
+        transform: none;
+        border-radius: 28px;
+        box-shadow: var(--shadow);
+    }
+
+    .tour-card:hover::after {
+        opacity: 0;
+        transform: translateX(-86%);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .hero::before,
-    .tour-card,
+    .hero::after,
+    .hero-inner::before,
+    .hero-inner::after,
+    .hero-label,
+    .hero h1,
+    .hero-intro,
+    .hero-actions,
+    .card-grid .tour-card,
     .tour-card::before {
         animation: none !important;
     }
 
+    .hero-label,
+    .hero h1,
+    .hero-intro,
+    .hero-actions,
+    .card-grid .tour-card {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .tour-card,
+    .tour-card::before,
+    .tour-card::after,
+    .card-image-wrap,
+    .card-image-wrap img,
+    .card-badge,
+    .card-footer a,
     .journey-steps-grid article,
     .destination-card,
     .testimonial-grid figure,
-    .final-cta,
-    .tour-card,
-    .tour-card::before {
+    .final-cta {
         transition-duration: 0.01ms !important;
     }
 }
