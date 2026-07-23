@@ -5,7 +5,7 @@
 
 :root {
     --motion-duration-fast: 240ms;
-    --motion-duration: 760ms;
+    --motion-duration: 680ms;
     --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -667,9 +667,9 @@
 .motion-ready .listing-hero-inner.motion-reveal,
 .motion-ready .policy-hero-inner.motion-reveal {
     transition:
-        opacity 850ms ease var(--reveal-delay),
-        transform 980ms var(--motion-ease-out) var(--reveal-delay),
-        clip-path 980ms var(--motion-ease-out) var(--reveal-delay);
+        opacity 700ms ease var(--reveal-delay),
+        transform 760ms var(--motion-ease-out) var(--reveal-delay),
+        clip-path 760ms var(--motion-ease-out) var(--reveal-delay);
 }
 
 .motion-ready .page-hero-inner.motion-reveal.is-visible,
@@ -690,7 +690,7 @@
     content: "";
     transform: scaleX(0);
     transform-origin: left center;
-    transition: transform 780ms var(--motion-ease-out) 240ms;
+    transition: transform 650ms var(--motion-ease-out) 180ms;
 }
 
 .section-heading.is-visible > div::after,
@@ -714,7 +714,7 @@
     pointer-events: none;
     transform: scaleX(1);
     transform-origin: right center;
-    transition: transform 900ms var(--motion-ease-out);
+    transition: transform 720ms var(--motion-ease-out);
 }
 
 .image-reveal-shell.is-image-visible::before {
