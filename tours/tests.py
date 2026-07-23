@@ -188,8 +188,43 @@ class PublicSiteTests(TestCase):
             response.content.decode().count("hero-slide hero-slide-"),
             3,
         )
+        self.assertEqual(
+            response.content.decode().count("data-hero-slide"),
+            4,
+        )
+        self.assertContains(response, 'data-hero-toggle')
+        self.assertContains(response, 'css/site-motion.css')
+        self.assertContains(response, 'js/site-motion.js')
+        self.assertContains(response, 'class="scroll-progress"')
+        self.assertContains(response, 'data-back-to-top')
         self.assertNotContains(response, "images.unsplash.com")
         self.assertContains(response, 'class="is-active" aria-current="page"')
+
+    def test_site_wide_motion_controls_render_on_public_pages(self):
+        urls = [
+            reverse("home"),
+            reverse("domestic_tours"),
+            reverse("safaris"),
+            reverse("about"),
+            reverse("gallery"),
+            reverse("contact"),
+            reverse("privacy_policy"),
+            reverse("terms_and_conditions"),
+            reverse("booking_policy"),
+            reverse("tour_detail", args=[self.safari_tour.slug]),
+        ]
+
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertContains(response, 'css/site-motion.css')
+                self.assertContains(response, 'js/site-motion.js')
+                self.assertContains(response, 'class="scroll-progress"')
+                self.assertContains(response, 'data-back-to-top')
+
+        policy_response = self.client.get(reverse("privacy_policy"))
+        self.assertContains(policy_response, 'class="policy-nav"')
+        self.assertContains(policy_response, 'href="#information-we-collect"')
 
     def test_booking_requires_policy_consent(self):
         response = self.client.post(

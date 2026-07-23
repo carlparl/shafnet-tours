@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="{% static 'css/contact-icons.css' %}">
     <link rel="stylesheet" href="{% static 'css/morph-effects.css' %}">
     <link rel="stylesheet" href="{% static 'css/site-polish.css' %}">
+    <link rel="stylesheet" href="{% static 'css/site-motion.css' %}">
+    <script src="{% static 'js/site-motion.js' %}" defer></script>
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -75,8 +77,12 @@
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/>
             <path d="M14 2v6h6M8 13h8M8 17h6"/>
         </symbol>
+        <symbol id="icon-arrow-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 15-6-6-6 6"/>
+        </symbol>
     </svg>
     <a class="skip-link" href="#main-content">Skip to main content</a>
+    <div class="scroll-progress" aria-hidden="true"><span></span></div>
 
     <div class="topbar">
         <div class="container topbar-inner">
@@ -181,32 +187,15 @@
         </div>
     </footer>
 
+    <button class="back-to-top" type="button" data-back-to-top aria-label="Back to top">
+        <svg class="ui-icon" aria-hidden="true"><use href="#icon-arrow-up"></use></svg>
+    </button>
+
     <a class="whatsapp-float" data-conversion="floating-whatsapp" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer" aria-label="Chat with Shafnet Tours on WhatsApp">
         <svg class="ui-icon whatsapp-mark" aria-hidden="true"><use href="#icon-whatsapp"></use></svg>
     </a>
 
     {% block extra_scripts %}{% endblock %}
-
-    <script>
-        (() => {
-            const button = document.querySelector('.menu-button');
-            const menu = document.getElementById('mobile-menu');
-            if (!button || !menu) return;
-
-            button.addEventListener('click', () => {
-                const open = button.getAttribute('aria-expanded') !== 'true';
-                button.setAttribute('aria-expanded', String(open));
-                menu.hidden = !open;
-            });
-
-            menu.querySelectorAll('a').forEach((link) => {
-                link.addEventListener('click', () => {
-                    button.setAttribute('aria-expanded', 'false');
-                    menu.hidden = true;
-                });
-            });
-        })();
-    </script>
 
     <script>
         (() => {

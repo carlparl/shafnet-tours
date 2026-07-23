@@ -5,17 +5,20 @@
 
 {% block content %}
 <section class="hero">
-    <div class="hero-slides" aria-hidden="true">
+    <div class="hero-slides" aria-hidden="true" data-hero-slides>
         <span
             class="hero-slide hero-slide-1"
+            data-hero-slide
             {% if safari_tours.0.image %}style="--hero-image: url('{{ safari_tours.0.image.url }}');"{% endif %}
         ></span>
         <span
             class="hero-slide hero-slide-2"
+            data-hero-slide
             {% if domestic_tours.0.image %}style="--hero-image: url('{{ domestic_tours.0.image.url }}');"{% endif %}
         ></span>
         <span
             class="hero-slide hero-slide-3"
+            data-hero-slide
             {% if destinations.0.image %}style="--hero-image: url('{{ destinations.0.image.url }}');"{% endif %}
         ></span>
     </div>
@@ -27,6 +30,17 @@
             <div class="hero-actions">
                 <a class="button button-light" data-conversion="hero-domestic-tours" href="{% url 'domestic_tours' %}">Explore domestic tours</a>
                 <a class="button button-outline-light" data-conversion="hero-safaris" href="{% url 'safaris' %}">Explore Uganda safaris</a>
+            </div>
+            <div class="hero-controls" aria-label="Hero image controls">
+                <div class="hero-dots" role="group" aria-label="Choose a hero image">
+                    <button class="hero-dot is-active" type="button" data-hero-go="0" aria-label="Show safari landscape" aria-pressed="true"></button>
+                    <button class="hero-dot" type="button" data-hero-go="1" aria-label="Show a domestic tour" aria-pressed="false"></button>
+                    <button class="hero-dot" type="button" data-hero-go="2" aria-label="Show a Uganda destination" aria-pressed="false"></button>
+                </div>
+                <button class="hero-pause" type="button" data-hero-toggle aria-pressed="false">
+                    <span class="hero-pause-icon" aria-hidden="true"></span>
+                    <span data-hero-toggle-label>Pause image rotation</span>
+                </button>
             </div>
         </div>
     </div>
@@ -222,20 +236,4 @@
         <a class="button button-light" data-conversion="homepage-final-whatsapp" href="https://wa.me/256757226513?text=Hello%20Shafnet%20Tours%2C%20I%20would%20like%20help%20planning%20a%20trip." target="_blank" rel="noopener noreferrer">Start planning on WhatsApp</a>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_scripts %}
-<script>
-    (() => {
-        const hero = document.querySelector('.hero');
-        if (!hero) return;
-
-        const updateAnimationState = () => {
-            hero.classList.toggle('hero-animation-paused', document.hidden);
-        };
-
-        document.addEventListener('visibilitychange', updateAnimationState);
-        updateAnimationState();
-    })();
-</script>
 {% endblock %}

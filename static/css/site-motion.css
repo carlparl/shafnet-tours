@@ -1,0 +1,753 @@
+/* Shafnet site-wide motion
+   Inspired by the restrained, image-led interactions common to leading
+   safari and travel sites. Every enhancement remains progressive and
+   respects the visitor's reduced-motion preference. */
+
+:root {
+    --motion-duration-fast: 240ms;
+    --motion-duration: 620ms;
+    --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root) {
+    animation: shafnet-page-out 160ms ease both;
+}
+
+::view-transition-new(root) {
+    animation: shafnet-page-in 360ms var(--motion-ease-out) both;
+}
+
+@keyframes shafnet-page-out {
+    to {
+        opacity: 0;
+        transform: scale(0.995);
+    }
+}
+
+@keyframes shafnet-page-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+/* Header response */
+
+.site-header,
+.navbar,
+.brand img {
+    transition:
+        min-height var(--motion-duration-fast) ease,
+        height var(--motion-duration-fast) ease,
+        background-color var(--motion-duration-fast) ease,
+        border-color var(--motion-duration-fast) ease,
+        box-shadow var(--motion-duration-fast) ease;
+}
+
+.site-header.is-scrolled {
+    border-bottom-color: rgba(21, 128, 61, 0.2);
+    background: rgba(255, 255, 255, 0.985);
+    box-shadow: 0 14px 36px rgba(5, 46, 27, 0.11);
+}
+
+.site-header.is-scrolled .navbar {
+    min-height: 68px;
+}
+
+.site-header.is-scrolled .brand img {
+    height: 42px;
+}
+
+/* Long-page progress and return control */
+
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 110;
+    height: 3px;
+    pointer-events: none;
+}
+
+.scroll-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #4ade80, var(--green-700));
+    box-shadow: 0 1px 8px rgba(22, 163, 74, 0.34);
+    transform: scaleX(var(--page-scroll-progress, 0));
+    transform-origin: left center;
+}
+
+.back-to-top {
+    position: fixed;
+    right: 27px;
+    bottom: 92px;
+    z-index: 39;
+    display: inline-flex;
+    width: 46px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(21, 128, 61, 0.22);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 12px 28px rgba(5, 46, 27, 0.16);
+    color: var(--green-800);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px) scale(0.9);
+    transition:
+        opacity 220ms ease,
+        transform 300ms var(--motion-ease-out),
+        background-color 220ms ease,
+        color 220ms ease;
+}
+
+.back-to-top .ui-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.back-to-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.back-to-top:hover,
+.back-to-top:focus-visible {
+    background: var(--green-800);
+    color: white;
+    transform: translateY(-3px) scale(1);
+}
+
+.back-to-top:focus-visible {
+    outline: 3px solid rgba(22, 163, 74, 0.28);
+    outline-offset: 3px;
+}
+
+/* Hero controls and controlled crossfade */
+
+.hero-controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.hero-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hero-dot {
+    width: 9px;
+    height: 9px;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.46);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+    cursor: pointer;
+    padding: 0;
+    transition:
+        width 320ms var(--motion-ease-out),
+        background-color 220ms ease,
+        box-shadow 220ms ease;
+}
+
+.hero-dot:hover,
+.hero-dot:focus-visible {
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.hero-dot:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 4px;
+}
+
+.hero-dot.is-active {
+    width: 30px;
+    background: #86efac;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.36);
+}
+
+.hero-pause {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.82);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+    padding: 7px 0;
+}
+
+.hero-pause:hover,
+.hero-pause:focus-visible {
+    color: white;
+}
+
+.hero-pause:focus-visible {
+    border-radius: 8px;
+    outline: 2px solid white;
+    outline-offset: 4px;
+}
+
+.hero-pause-icon {
+    position: relative;
+    display: inline-block;
+    width: 10px;
+    height: 12px;
+    border-right: 3px solid currentColor;
+    border-left: 3px solid currentColor;
+}
+
+.hero-pause[aria-pressed="true"] .hero-pause-icon {
+    width: 0;
+    height: 0;
+    border-top: 6px solid transparent;
+    border-right: 0;
+    border-bottom: 6px solid transparent;
+    border-left: 9px solid currentColor;
+}
+
+.hero.hero-js-active .hero-slide {
+    opacity: 0;
+    animation: none;
+    transform: scale(1.03);
+    transition:
+        opacity 1250ms ease,
+        transform 7200ms linear;
+}
+
+.hero.hero-js-active .hero-slide.is-active {
+    opacity: 1;
+    transform: scale(1.075);
+}
+
+/* Scroll reveals. These rules activate only after JavaScript has prepared
+   an element, so content remains visible if scripting is unavailable. */
+
+.motion-reveal {
+    --reveal-delay: 0ms;
+}
+
+.motion-ready .motion-reveal:not(.is-visible) {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+}
+
+.motion-ready .motion-reveal {
+    transition:
+        opacity var(--motion-duration) ease var(--reveal-delay),
+        transform var(--motion-duration) var(--motion-ease-out) var(--reveal-delay);
+}
+
+.motion-ready .motion-reveal.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+}
+
+.motion-ready .motion-reveal[data-reveal-side="left"]:not(.is-visible) {
+    transform: translate3d(-28px, 0, 0);
+}
+
+.motion-ready .motion-reveal[data-reveal-side="right"]:not(.is-visible) {
+    transform: translate3d(28px, 0, 0);
+}
+
+/* Image-led depth on supporting cards */
+
+.destination-card,
+.gallery-card,
+.about-image-wrap,
+.detail-image-wrap {
+    isolation: isolate;
+}
+
+.destination-card {
+    overflow: hidden;
+}
+
+.destination-card img,
+.gallery-card img,
+.about-image-wrap img,
+.detail-image-wrap img {
+    transition:
+        transform 820ms var(--motion-ease-out),
+        filter 420ms ease;
+}
+
+.destination-card:hover img,
+.destination-card:focus-within img,
+.gallery-card:hover img,
+.gallery-card:focus-within img,
+.about-image-wrap:hover img,
+.detail-image-wrap:hover img {
+    transform: scale(1.055);
+    filter: saturate(1.05) contrast(1.02);
+}
+
+.destination-card > div:last-child {
+    position: relative;
+    background: white;
+}
+
+/* Page-specific interaction layers */
+
+.listing-switcher {
+    transition:
+        box-shadow 260ms ease,
+        border-color 260ms ease;
+}
+
+.listing-switcher:focus-within {
+    border-color: rgba(21, 128, 61, 0.24);
+    box-shadow: 0 12px 28px rgba(5, 46, 27, 0.07);
+}
+
+.switcher-link {
+    transition:
+        color 240ms ease,
+        background-color 240ms ease,
+        border-color 240ms ease,
+        transform 280ms var(--motion-ease-out),
+        box-shadow 280ms ease;
+}
+
+.switcher-link:hover,
+.switcher-link:focus-visible {
+    box-shadow: 0 8px 18px rgba(5, 46, 27, 0.12);
+    transform: translateY(-2px);
+}
+
+.value-card,
+.journey-steps-grid article,
+.feature-grid article,
+.package-card,
+.itinerary-item,
+.detail-info-card,
+.contact-method,
+.contact-help-card,
+.policy-intro-card,
+.confirmation-summary,
+.confirmation-next,
+.confirmation-safety {
+    transition:
+        transform 360ms var(--motion-ease-out),
+        border-color 260ms ease,
+        box-shadow 360ms var(--motion-ease-out),
+        background-color 260ms ease;
+}
+
+.value-card:hover,
+.value-card:focus-within,
+.journey-steps-grid article:hover,
+.feature-grid article:hover,
+.package-card:hover,
+.package-card:focus-within,
+.itinerary-item:hover,
+.detail-info-card:hover,
+.contact-method:hover,
+.contact-method:focus-visible,
+.contact-help-card:hover,
+.policy-intro-card:hover,
+.confirmation-summary:hover,
+.confirmation-next:hover {
+    border-color: rgba(21, 128, 61, 0.28);
+    box-shadow: 0 20px 42px rgba(5, 46, 27, 0.11);
+    transform: translateY(-5px);
+}
+
+.feature-grid article:hover {
+    border-color: rgba(134, 239, 172, 0.28);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.12);
+}
+
+.value-card > span,
+.day-number,
+.contact-icon,
+.help-bullet,
+.confirmation-next li > span {
+    transition:
+        transform 360ms var(--motion-ease-out),
+        background-color 260ms ease,
+        color 260ms ease,
+        box-shadow 300ms ease;
+}
+
+.value-card:hover > span,
+.itinerary-item:hover .day-number,
+.contact-method:hover .contact-icon,
+.contact-method:focus-visible .contact-icon {
+    box-shadow: 0 10px 24px rgba(21, 128, 61, 0.18);
+    transform: rotate(-4deg) scale(1.06);
+}
+
+.about-image-note {
+    transition:
+        transform 420ms var(--motion-ease-out),
+        box-shadow 340ms ease;
+}
+
+.about-image-wrap:hover .about-image-note {
+    box-shadow: 0 25px 48px rgba(5, 46, 27, 0.19);
+    transform: translate3d(6px, -6px, 0);
+}
+
+.text-link span,
+.card-footer a span {
+    display: inline-block;
+    transition: transform 260ms var(--motion-ease-out);
+}
+
+.text-link:hover span,
+.text-link:focus-visible span,
+.card-footer a:hover span,
+.card-footer a:focus-visible span {
+    transform: translateX(5px);
+}
+
+/* Tour detail progression */
+
+.itinerary-item.is-visible .day-number {
+    animation: shafnet-day-arrival 560ms var(--motion-ease-out) both;
+    animation-delay: calc(var(--reveal-delay) + 120ms);
+}
+
+@keyframes shafnet-day-arrival {
+    from {
+        opacity: 0.4;
+        transform: scale(0.72);
+    }
+}
+
+.tour-map {
+    position: relative;
+    isolation: isolate;
+}
+
+.tour-map::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    background:
+        linear-gradient(110deg, var(--green-50) 25%, #ffffff 42%, var(--green-50) 60%);
+    background-size: 220% 100%;
+    color: var(--green-800);
+    content: "Loading destination map…";
+    font-size: 13px;
+    font-weight: 800;
+    pointer-events: none;
+    animation: shafnet-map-loading 1500ms linear infinite;
+    transition: opacity 360ms ease;
+}
+
+.tour-map.is-loaded::after {
+    opacity: 0;
+}
+
+.tour-map iframe {
+    opacity: 0.35;
+    transform: scale(1.015);
+    transition:
+        opacity 420ms ease,
+        transform 620ms var(--motion-ease-out);
+}
+
+.tour-map.is-loaded iframe {
+    opacity: 1;
+    transform: scale(1);
+}
+
+@keyframes shafnet-map-loading {
+    to {
+        background-position: -220% 0;
+    }
+}
+
+/* Forms become clearer at the exact point of interaction */
+
+.booking-form input:not([type="checkbox"]),
+.booking-form textarea,
+.contact-form input,
+.contact-form textarea {
+    transition:
+        border-color 220ms ease,
+        box-shadow 220ms ease,
+        background-color 220ms ease,
+        transform 280ms var(--motion-ease-out);
+}
+
+.booking-form input:not([type="checkbox"]):focus,
+.booking-form textarea:focus,
+.contact-form input:focus,
+.contact-form textarea:focus {
+    background: white;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.11);
+    transform: translateY(-2px);
+}
+
+.booking-card:focus-within,
+.contact-form-card:focus-within {
+    border-color: rgba(21, 128, 61, 0.3);
+    box-shadow: 0 24px 52px rgba(5, 46, 27, 0.13);
+}
+
+.booking-card,
+.contact-form-card {
+    transition:
+        border-color 260ms ease,
+        box-shadow 360ms var(--motion-ease-out);
+}
+
+/* Policy pages: the side navigation follows the section being read */
+
+.policy-nav a {
+    position: relative;
+    transition:
+        color 220ms ease,
+        background-color 220ms ease,
+        transform 260ms var(--motion-ease-out);
+}
+
+.policy-nav a::before {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    width: 3px;
+    height: 0;
+    border-radius: 999px;
+    background: var(--green-600);
+    content: "";
+    transform: translateY(-50%);
+    transition: height 260ms var(--motion-ease-out);
+}
+
+.policy-nav a.is-active {
+    background: var(--green-50);
+    color: var(--green-900);
+    transform: translateX(3px);
+}
+
+.policy-nav a.is-active::before {
+    height: 20px;
+}
+
+.policy-number {
+    transition:
+        transform 320ms var(--motion-ease-out),
+        background-color 240ms ease,
+        color 240ms ease;
+}
+
+.policy-content > section.is-visible .policy-number {
+    background: var(--green-700);
+    color: white;
+    transform: rotate(-5deg) scale(1.06);
+}
+
+/* Booking confirmation feedback */
+
+.confirmation-mark.is-visible {
+    animation: shafnet-confirmation-arrival 720ms var(--motion-ease-out) both;
+}
+
+@keyframes shafnet-confirmation-arrival {
+    0% {
+        opacity: 0;
+        transform: scale(0.4) rotate(-20deg);
+    }
+
+    70% {
+        transform: scale(1.1) rotate(3deg);
+    }
+}
+
+.confirmation-next li.is-visible > span {
+    background: var(--green-700);
+    color: white;
+    transform: scale(1.06);
+}
+
+.confirmation-summary dl > div.is-visible {
+    border-color: rgba(21, 128, 61, 0.16);
+}
+
+/* Footer interactions finish the page without adding another large effect */
+
+.footer-grid a {
+    transition:
+        color 220ms ease,
+        transform 260ms var(--motion-ease-out);
+}
+
+.footer-grid a:hover,
+.footer-grid a:focus-visible {
+    color: white;
+    transform: translateX(4px);
+}
+
+/* Animated mobile navigation */
+
+.menu-button span:not(.sr-only) {
+    transform-origin: center;
+    transition:
+        opacity 180ms ease,
+        transform 260ms var(--motion-ease-out);
+}
+
+.menu-button.is-open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.menu-button.is-open span:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+}
+
+.menu-button.is-open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+@media (max-width: 980px) {
+    body.mobile-menu-open {
+        overflow: hidden;
+    }
+
+    .mobile-nav:not([hidden]) {
+        display: grid;
+        overflow: hidden;
+        grid-template-rows: 0fr;
+        opacity: 0;
+        transform: translateY(-8px);
+        transition:
+            grid-template-rows 320ms var(--motion-ease-out),
+            opacity 220ms ease,
+            transform 320ms var(--motion-ease-out);
+    }
+
+    .mobile-nav:not([hidden]).is-open {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .mobile-nav-inner {
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .mobile-nav-inner > a {
+        opacity: 0;
+        transform: translateY(-8px);
+        transition:
+            opacity 240ms ease,
+            transform 320ms var(--motion-ease-out);
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a:nth-child(2) {
+        transition-delay: 30ms;
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a:nth-child(3) {
+        transition-delay: 60ms;
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a:nth-child(4) {
+        transition-delay: 90ms;
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a:nth-child(5) {
+        transition-delay: 120ms;
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a:nth-child(6) {
+        transition-delay: 150ms;
+    }
+
+    .mobile-nav.is-open .mobile-nav-inner > a:nth-child(7) {
+        transition-delay: 180ms;
+    }
+}
+
+@media (max-width: 680px) {
+    .back-to-top {
+        right: 17px;
+        bottom: 88px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .hero-controls {
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .hero-pause {
+        font-size: 11px;
+    }
+
+    .motion-ready .motion-reveal:not(.is-visible),
+    .motion-ready .motion-reveal[data-reveal-side="left"]:not(.is-visible),
+    .motion-ready .motion-reveal[data-reveal-side="right"]:not(.is-visible) {
+        transform: translate3d(0, 16px, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation: none;
+    }
+
+    .hero-controls {
+        display: none;
+    }
+
+    .hero.hero-js-active .hero-slide,
+    .hero.hero-js-active .hero-slide.is-active,
+    .motion-ready .motion-reveal,
+    .motion-ready .motion-reveal:not(.is-visible),
+    .motion-ready .motion-reveal[data-reveal-side="left"]:not(.is-visible),
+    .motion-ready .motion-reveal[data-reveal-side="right"]:not(.is-visible) {
+        opacity: 1;
+        animation: none;
+        transform: none;
+        transition: none;
+    }
+
+    .hero.hero-js-active .hero-slide:not(:first-child) {
+        opacity: 0;
+    }
+
+    .itinerary-item.is-visible .day-number,
+    .confirmation-mark.is-visible,
+    .tour-map::after {
+        animation: none;
+    }
+
+    .tour-map iframe,
+    .tour-map.is-loaded iframe {
+        transform: none;
+        transition: none;
+    }
+}
