@@ -5,7 +5,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Booking, ContactMessage, Tour
+from .models import Booking, ContactMessage, GalleryImage, Tour
 
 
 @override_settings(
@@ -50,6 +50,11 @@ class PublicSiteTests(TestCase):
             target_audience="international",
             region="western",
             is_featured=True,
+        )
+        cls.gallery_image = GalleryImage.objects.create(
+            title="Kazinga Channel",
+            caption="A quiet afternoon on the water.",
+            image="gallery/kazinga-channel.jpg",
         )
 
     def test_public_pages_render(self):
@@ -193,6 +198,7 @@ class PublicSiteTests(TestCase):
             4,
         )
         self.assertContains(response, 'data-hero-toggle')
+        self.assertContains(response, 'class="hero-scroll-cue"')
         self.assertContains(response, 'css/site-motion.css')
         self.assertContains(response, 'js/site-motion.js')
         self.assertContains(response, 'class="scroll-progress"')
@@ -225,6 +231,10 @@ class PublicSiteTests(TestCase):
         policy_response = self.client.get(reverse("privacy_policy"))
         self.assertContains(policy_response, 'class="policy-nav"')
         self.assertContains(policy_response, 'href="#information-we-collect"')
+
+        gallery_response = self.client.get(reverse("gallery"))
+        self.assertContains(gallery_response, 'data-gallery-item')
+        self.assertContains(gallery_response, 'data-gallery-open')
 
     def test_booking_requires_policy_consent(self):
         response = self.client.post(

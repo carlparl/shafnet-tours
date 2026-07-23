@@ -17,8 +17,18 @@
         {% if images %}
             <div class="gallery-grid">
                 {% for image in images %}
-                    <figure class="gallery-card">
+                    <figure
+                        class="gallery-card"
+                        data-gallery-item
+                        data-gallery-src="{{ image.image.url }}"
+                        data-gallery-title="{{ image.title|default:'Uganda travel experience' }}"
+                        data-gallery-caption="{{ image.caption|default:'' }}"
+                    >
                         <img src="{{ image.image.url }}" alt="{{ image.title|default:image.caption|default:'Uganda travel experience' }}" loading="lazy">
+                        <button class="gallery-open" type="button" data-gallery-open aria-label="Open {{ image.title|default:'travel image' }}">
+                            <span aria-hidden="true">＋</span>
+                            View image
+                        </button>
                         {% if image.title or image.caption %}
                             <figcaption>
                                 {% if image.title %}<h2>{{ image.title }}</h2>{% endif %}

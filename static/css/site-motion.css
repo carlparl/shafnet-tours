@@ -5,7 +5,7 @@
 
 :root {
     --motion-duration-fast: 240ms;
-    --motion-duration: 620ms;
+    --motion-duration: 760ms;
     --motion-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -224,15 +224,31 @@
 .hero.hero-js-active .hero-slide {
     opacity: 0;
     animation: none;
-    transform: scale(1.03);
+    transform:
+        translate3d(var(--hero-shift-x, 0), var(--hero-shift-y, 0), 0)
+        scale(1.035);
     transition:
         opacity 1250ms ease,
-        transform 7200ms linear;
+        transform 1800ms var(--motion-ease-out);
 }
 
 .hero.hero-js-active .hero-slide.is-active {
     opacity: 1;
-    transform: scale(1.075);
+    transform:
+        translate3d(var(--hero-shift-x, 0), var(--hero-shift-y, 0), 0)
+        scale(1.095);
+}
+
+.motion-ready .hero-copy {
+    animation: shafnet-hero-copy-arrival 980ms var(--motion-ease-out) both;
+}
+
+@keyframes shafnet-hero-copy-arrival {
+    from {
+        opacity: 0;
+        clip-path: inset(0 0 28% 0);
+        transform: translate3d(0, 48px, 0);
+    }
 }
 
 /* Scroll reveals. These rules activate only after JavaScript has prepared
@@ -244,7 +260,7 @@
 
 .motion-ready .motion-reveal:not(.is-visible) {
     opacity: 0;
-    transform: translate3d(0, 24px, 0);
+    transform: translate3d(0, 38px, 0) scale(0.985);
 }
 
 .motion-ready .motion-reveal {
@@ -255,15 +271,15 @@
 
 .motion-ready .motion-reveal.is-visible {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
 }
 
 .motion-ready .motion-reveal[data-reveal-side="left"]:not(.is-visible) {
-    transform: translate3d(-28px, 0, 0);
+    transform: translate3d(-48px, 0, 0) scale(0.985);
 }
 
 .motion-ready .motion-reveal[data-reveal-side="right"]:not(.is-visible) {
-    transform: translate3d(28px, 0, 0);
+    transform: translate3d(48px, 0, 0) scale(0.985);
 }
 
 /* Image-led depth on supporting cards */
@@ -601,6 +617,297 @@
     transform: translateX(4px);
 }
 
+/* High-impact cinematic layer */
+
+.hero-scroll-cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    margin-top: 34px;
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero-scroll-cue i {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    width: 54px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.32);
+}
+
+.hero-scroll-cue i::after {
+    position: absolute;
+    inset: 0;
+    background: #86efac;
+    content: "";
+    transform: translateX(-100%);
+    animation: shafnet-scroll-cue 1800ms var(--motion-ease-out) infinite;
+}
+
+@keyframes shafnet-scroll-cue {
+    55%,
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.motion-ready .page-hero-inner.motion-reveal:not(.is-visible),
+.motion-ready .listing-hero-inner.motion-reveal:not(.is-visible),
+.motion-ready .policy-hero-inner.motion-reveal:not(.is-visible) {
+    clip-path: inset(0 0 34% 0);
+    transform: translate3d(0, 52px, 0) scale(0.98);
+}
+
+.motion-ready .page-hero-inner.motion-reveal,
+.motion-ready .listing-hero-inner.motion-reveal,
+.motion-ready .policy-hero-inner.motion-reveal {
+    transition:
+        opacity 850ms ease var(--reveal-delay),
+        transform 980ms var(--motion-ease-out) var(--reveal-delay),
+        clip-path 980ms var(--motion-ease-out) var(--reveal-delay);
+}
+
+.motion-ready .page-hero-inner.motion-reveal.is-visible,
+.motion-ready .listing-hero-inner.motion-reveal.is-visible,
+.motion-ready .policy-hero-inner.motion-reveal.is-visible {
+    clip-path: inset(0 0 0 0);
+}
+
+.section-heading > div::after,
+.listing-heading > div::after,
+.journey-steps-heading > div::after {
+    display: block;
+    width: min(120px, 28vw);
+    height: 3px;
+    margin-top: 20px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--green-700), #86efac);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 780ms var(--motion-ease-out) 240ms;
+}
+
+.section-heading.is-visible > div::after,
+.listing-heading.is-visible > div::after,
+.journey-steps-heading.is-visible > div::after {
+    transform: scaleX(1);
+}
+
+.image-reveal-shell {
+    position: relative;
+    isolation: isolate;
+}
+
+.image-reveal-shell::before {
+    position: absolute;
+    inset: -1px;
+    z-index: 4;
+    background:
+        linear-gradient(135deg, var(--green-950), var(--green-700) 65%, #86efac);
+    content: "";
+    pointer-events: none;
+    transform: scaleX(1);
+    transform-origin: right center;
+    transition: transform 900ms var(--motion-ease-out);
+}
+
+.image-reveal-shell.is-image-visible::before {
+    transform: scaleX(0);
+}
+
+.card-image-wrap.image-reveal-shell::after {
+    transition-delay: 0ms;
+}
+
+.itinerary-list::after {
+    position: absolute;
+    top: 26px;
+    bottom: 26px;
+    left: 25px;
+    z-index: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #4ade80, var(--green-700));
+    content: "";
+    pointer-events: none;
+    transform: scaleY(var(--itinerary-progress, 0));
+    transform-origin: top center;
+    transition: transform 180ms linear;
+}
+
+/* Gallery viewer */
+
+.gallery-open {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.48);
+    border-radius: 999px;
+    background: rgba(5, 46, 27, 0.76);
+    backdrop-filter: blur(12px);
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    padding: 9px 13px;
+    font-size: 11px;
+    font-weight: 800;
+    transform: translateY(-8px);
+    transition:
+        opacity 260ms ease,
+        transform 320ms var(--motion-ease-out),
+        background-color 220ms ease;
+}
+
+.gallery-open span {
+    font-size: 16px;
+    line-height: 0.8;
+}
+
+.gallery-card:hover .gallery-open,
+.gallery-card:focus-within .gallery-open {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.gallery-open:hover,
+.gallery-open:focus-visible {
+    background: var(--green-700);
+}
+
+.gallery-open:focus-visible {
+    opacity: 1;
+    outline: 3px solid rgba(134, 239, 172, 0.52);
+    outline-offset: 3px;
+    transform: translateY(0);
+}
+
+body.gallery-viewer-open {
+    overflow: hidden;
+}
+
+.gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) 72px;
+    align-items: center;
+    background: rgba(3, 20, 11, 0.94);
+    backdrop-filter: blur(18px);
+    opacity: 0;
+    padding: 42px;
+    transition: opacity 280ms ease;
+}
+
+.gallery-lightbox[hidden] {
+    display: none;
+}
+
+.gallery-lightbox.is-open {
+    opacity: 1;
+}
+
+.gallery-lightbox-stage {
+    display: grid;
+    max-width: 1180px;
+    max-height: calc(100vh - 84px);
+    justify-self: center;
+    overflow: hidden;
+    border-radius: 24px;
+    background: #071f12;
+    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.46);
+    transform: translateY(26px) scale(0.96);
+    transition: transform 460ms var(--motion-ease-out);
+}
+
+.gallery-lightbox.is-open .gallery-lightbox-stage {
+    transform: translateY(0) scale(1);
+}
+
+.gallery-lightbox-image {
+    width: min(1100px, calc(100vw - 240px));
+    max-height: calc(100vh - 190px);
+    object-fit: contain;
+}
+
+.gallery-lightbox-caption {
+    display: grid;
+    gap: 5px;
+    background: #071f12;
+    color: white;
+    padding: 18px 22px 20px;
+}
+
+.gallery-lightbox-caption strong {
+    font-size: 17px;
+}
+
+.gallery-lightbox-caption span {
+    color: #bce9ca;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.gallery-lightbox-close,
+.gallery-lightbox-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    cursor: pointer;
+    transition:
+        background-color 220ms ease,
+        border-color 220ms ease,
+        transform 280ms var(--motion-ease-out);
+}
+
+.gallery-lightbox-close:hover,
+.gallery-lightbox-close:focus-visible,
+.gallery-lightbox-nav:hover,
+.gallery-lightbox-nav:focus-visible {
+    border-color: #86efac;
+    background: var(--green-700);
+    outline: none;
+    transform: scale(1.08);
+}
+
+.gallery-lightbox-nav {
+    width: 52px;
+    height: 52px;
+    font-size: 28px;
+}
+
+.gallery-lightbox-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    font-size: 25px;
+}
+
+.gallery-lightbox-count {
+    position: absolute;
+    top: 33px;
+    left: 34px;
+    color: #bce9ca;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
 /* Animated mobile navigation */
 
 .menu-button span:not(.sr-only) {
@@ -711,6 +1018,41 @@
     .motion-ready .motion-reveal[data-reveal-side="right"]:not(.is-visible) {
         transform: translate3d(0, 16px, 0);
     }
+
+    .hero-scroll-cue {
+        display: none;
+    }
+
+    .gallery-open {
+        opacity: 1;
+        transform: none;
+    }
+
+    .gallery-lightbox {
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
+        padding: 72px 10px 24px;
+    }
+
+    .gallery-lightbox-image {
+        width: calc(100vw - 108px);
+        max-height: calc(100vh - 230px);
+    }
+
+    .gallery-lightbox-nav {
+        width: 38px;
+        height: 38px;
+        font-size: 21px;
+    }
+
+    .gallery-lightbox-close {
+        top: 15px;
+        right: 15px;
+    }
+
+    .gallery-lightbox-count {
+        top: 27px;
+        left: 18px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -741,7 +1083,8 @@
 
     .itinerary-item.is-visible .day-number,
     .confirmation-mark.is-visible,
-    .tour-map::after {
+    .tour-map::after,
+    .hero-scroll-cue i::after {
         animation: none;
     }
 
@@ -749,5 +1092,15 @@
     .tour-map.is-loaded iframe {
         transform: none;
         transition: none;
+    }
+
+    .motion-ready .hero-copy,
+    .image-reveal-shell::before {
+        animation: none;
+        transition: none;
+    }
+
+    .image-reveal-shell::before {
+        display: none;
     }
 }

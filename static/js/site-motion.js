@@ -173,6 +173,24 @@
             });
         }
 
+        hero.addEventListener(
+            "pointermove",
+            (event) => {
+                if (event.pointerType === "touch") return;
+                const bounds = hero.getBoundingClientRect();
+                const horizontal = (event.clientX - bounds.left) / bounds.width - 0.5;
+                const vertical = (event.clientY - bounds.top) / bounds.height - 0.5;
+                hero.style.setProperty("--hero-shift-x", `${horizontal * -16}px`);
+                hero.style.setProperty("--hero-shift-y", `${vertical * -10}px`);
+            },
+            { passive: true }
+        );
+
+        hero.addEventListener("pointerleave", () => {
+            hero.style.setProperty("--hero-shift-x", "0px");
+            hero.style.setProperty("--hero-shift-y", "0px");
+        });
+
         document.addEventListener("visibilitychange", start);
         render(0);
         updateToggle();
@@ -348,6 +366,202 @@
         });
     };
 
+    const initImageReveals = () => {
+        const shells = Array.from(
+            document.querySelectorAll(
+                ".card-image-wrap, .gallery-card, .detail-image-wrap"
+            )
+        );
+
+        if (!shells.length || reducedMotion.matches) return;
+
+        shells.forEach((shell) => shell.classList.add("image-reveal-shell"));
+
+        if (!("IntersectionObserver" in window)) {
+            shells.forEach((shell) => shell.classList.add("is-image-visible"));
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add("is-image-visible");
+                    observer.unobserve(entry.target);
+                });
+            },
+            {
+                rootMargin: "0px 0px -10% 0px",
+                threshold: 0.12
+            }
+        );
+
+        shells.forEach((shell) => observer.observe(shell));
+    };
+
+    const initItineraryProgress = () => {
+        const lists = Array.from(document.querySelectorAll(".itinerary-list"));
+        if (!lists.length) return;
+
+        if (reducedMotion.matches) {
+            lists.forEach((list) => {
+                list.style.setProperty("--itinerary-progress", "1");
+            });
+            return;
+        }
+
+        let queued = false;
+
+        const update = () => {
+            lists.forEach((list) => {
+                const bounds = list.getBoundingClientRect();
+                const start = window.innerHeight * 0.72;
+                const distance = Math.max(bounds.height + window.innerHeight * 0.18, 1);
+                const progress = Math.min(
+                    Math.max((start - bounds.top) / distance, 0),
+                    1
+                );
+                list.style.setProperty("--itinerary-progress", String(progress));
+            });
+            queued = false;
+        };
+
+        const requestUpdate = () => {
+            if (queued) return;
+            queued = true;
+            window.requestAnimationFrame(update);
+        };
+
+        window.addEventListener("scroll", requestUpdate, { passive: true });
+        window.addEventListener("resize", requestUpdate, { passive: true });
+        update();
+    };
+
+    const initGalleryLightbox = () => {
+        const items = Array.from(document.querySelectorAll("[data-gallery-item]"));
+        if (!items.length) return;
+
+        const viewer = document.createElement("div");
+        viewer.className = "gallery-lightbox";
+        viewer.hidden = true;
+        viewer.setAttribute("role", "dialog");
+        viewer.setAttribute("aria-modal", "true");
+        viewer.setAttribute("aria-label", "Travel gallery image viewer");
+        viewer.innerHTML = `
+            <span class="gallery-lightbox-count" aria-live="polite"></span>
+            <button class="gallery-lightbox-close" type="button" aria-label="Close image viewer">×</button>
+            <button class="gallery-lightbox-nav gallery-lightbox-prev" type="button" aria-label="Previous image">‹</button>
+            <figure class="gallery-lightbox-stage">
+                <img class="gallery-lightbox-image" alt="">
+                <figcaption class="gallery-lightbox-caption">
+                    <strong></strong>
+                    <span></span>
+                </figcaption>
+            </figure>
+            <button class="gallery-lightbox-nav gallery-lightbox-next" type="button" aria-label="Next image">›</button>
+        `;
+        document.body.append(viewer);
+
+        const image = viewer.querySelector(".gallery-lightbox-image");
+        const title = viewer.querySelector(".gallery-lightbox-caption strong");
+        const caption = viewer.querySelector(".gallery-lightbox-caption span");
+        const count = viewer.querySelector(".gallery-lightbox-count");
+        const closeButton = viewer.querySelector(".gallery-lightbox-close");
+        const previousButton = viewer.querySelector(".gallery-lightbox-prev");
+        const nextButton = viewer.querySelector(".gallery-lightbox-next");
+        const navigationButtons = [previousButton, nextButton];
+
+        let activeIndex = 0;
+        let lastTrigger;
+        let closeTimer;
+
+        navigationButtons.forEach((button) => {
+            button.hidden = items.length < 2;
+        });
+
+        const render = (index) => {
+            activeIndex = (index + items.length) % items.length;
+            const item = items[activeIndex];
+            const thumbnail = item.querySelector("img");
+
+            image.src = item.dataset.gallerySrc;
+            image.alt = thumbnail?.alt || item.dataset.galleryTitle || "Travel image";
+            title.textContent = item.dataset.galleryTitle || "Uganda travel experience";
+            caption.textContent = item.dataset.galleryCaption || "";
+            caption.hidden = !caption.textContent;
+            count.textContent = `${activeIndex + 1} / ${items.length}`;
+        };
+
+        const open = (index, trigger) => {
+            window.clearTimeout(closeTimer);
+            lastTrigger = trigger;
+            render(index);
+            viewer.hidden = false;
+            document.body.classList.add("gallery-viewer-open");
+            window.requestAnimationFrame(() => {
+                viewer.classList.add("is-open");
+                closeButton.focus();
+            });
+        };
+
+        const close = () => {
+            viewer.classList.remove("is-open");
+            document.body.classList.remove("gallery-viewer-open");
+
+            const finish = () => {
+                viewer.hidden = true;
+                image.removeAttribute("src");
+                lastTrigger?.focus();
+            };
+
+            if (reducedMotion.matches) {
+                finish();
+            } else {
+                closeTimer = window.setTimeout(finish, 300);
+            }
+        };
+
+        items.forEach((item, index) => {
+            const trigger = item.querySelector("[data-gallery-open]");
+            trigger?.addEventListener("click", () => open(index, trigger));
+        });
+
+        closeButton.addEventListener("click", close);
+        previousButton.addEventListener("click", () => render(activeIndex - 1));
+        nextButton.addEventListener("click", () => render(activeIndex + 1));
+
+        viewer.addEventListener("click", (event) => {
+            if (event.target === viewer) close();
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (viewer.hidden) return;
+
+            if (event.key === "Escape") {
+                close();
+            } else if (event.key === "ArrowLeft" && items.length > 1) {
+                render(activeIndex - 1);
+            } else if (event.key === "ArrowRight" && items.length > 1) {
+                render(activeIndex + 1);
+            } else if (event.key === "Tab") {
+                const focusable = [
+                    closeButton,
+                    ...navigationButtons.filter((button) => !button.hidden)
+                ];
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+    };
+
     const init = () => {
         initHeader();
         initMobileNavigation();
@@ -355,6 +569,9 @@
         initReveals();
         initPolicyNavigation();
         initMapFrames();
+        initImageReveals();
+        initItineraryProgress();
+        initGalleryLightbox();
     };
 
     if (document.readyState === "loading") {
