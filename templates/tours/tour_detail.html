@@ -1,11 +1,31 @@
 {% extends "base.html" %}
+{% load static image_urls %}
 
 {% block title %}{{ tour.title }} | Shafnet Tours{% endblock %}
 {% block meta_description %}Explore {{ tour.title }}, a {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
 {% block og_type %}article{% endblock %}
 {% block og_title %}{{ tour.title }} | Shafnet Tours{% endblock %}
 {% block og_description %}Explore this {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
-{% block og_image %}{% if tour.image %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ tour.image.url }}">{% endif %}{% endblock %}
+{% block og_image %}
+    {% if tour.image %}
+        {% absolute_optimized_image_url tour.image 1600 as tour_og_url %}
+        <meta property="og:image" content="{{ tour_og_url }}">
+        <meta property="og:image:alt" content="{{ tour.title }}">
+    {% else %}
+        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}">
+        <meta property="og:image:alt" content="Uganda lake landscape with islands and green hills">
+    {% endif %}
+{% endblock %}
+{% block twitter_title %}{{ tour.title }} | Shafnet Tours{% endblock %}
+{% block twitter_description %}Explore this {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
+{% block twitter_image %}
+    {% if tour.image %}
+        {% absolute_optimized_image_url tour.image 1600 as tour_twitter_url %}
+        <meta name="twitter:image" content="{{ tour_twitter_url }}">
+    {% else %}
+        <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}">
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <section class="detail-top">
@@ -25,7 +45,7 @@
         <div class="detail-hero-grid">
             <div class="detail-image-wrap">
                 {% if tour.image %}
-                    <img src="{{ tour.image.url }}" alt="{{ tour.title }}">
+                    <img src="{{ tour.image|optimized_image_url:'1600' }}" alt="{{ tour.title }}" decoding="async">
                 {% else %}
                     <div class="detail-image-placeholder {% if tour.target_audience == 'international' %}safari-placeholder{% endif %}">
                         <span>{% if tour.target_audience == "domestic" %}Uganda getaway{% else %}Uganda safari{% endif %}</span>

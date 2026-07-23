@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}About Shafnet Tours | Uganda Travel Specialists{% endblock %}
 {% block meta_description %}Learn how Shafnet Tours plans domestic getaways and Uganda safari experiences with attentive service and local knowledge.{% endblock %}
@@ -25,7 +26,7 @@
             </div>
         </div>
         <div class="about-image-wrap">
-            <img src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&amp;fit=crop&amp;w=1200&amp;q=86" alt="Green landscape" loading="lazy">
+            <img src="{% static 'images/page-heroes/about-hero.jpg' %}" alt="Uganda lake landscape and green hills" loading="lazy" decoding="async">
             <div class="about-image-note">
                 <strong>Rooted in Uganda</strong>
                 <span>Local knowledge behind every route.</span>

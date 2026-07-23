@@ -1,7 +1,8 @@
+{% load image_urls %}
 <article class="tour-card group flex h-full flex-col overflow-hidden rounded-3xl bg-white">
     <a href="{% url 'tour_detail' tour.slug %}" class="relative block overflow-hidden" aria-label="View {{ tour.title }}">
         {% if tour.image %}
-            <img src="{{ tour.image.url }}" class="image-zoom h-56 w-full object-cover" alt="{{ tour.title }}" loading="lazy">
+            <img src="{{ tour.image|optimized_image_url:'800' }}" class="image-zoom h-56 w-full object-cover" alt="{{ tour.title }}" loading="lazy" decoding="async">
         {% else %}
             <div class="flex h-56 w-full items-center justify-center bg-gradient-to-br from-green-100 to-emerald-50 text-green-700">
                 <i class="fa-solid fa-mountain-sun text-4xl" aria-hidden="true"></i>

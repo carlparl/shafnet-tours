@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+from types import SimpleNamespace
 
 from django.contrib.staticfiles import finders
 from django.core import mail
@@ -8,6 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import Booking, ContactMessage, GalleryImage, Tour
+from .templatetags.image_urls import optimized_image_url
 
 
 @override_settings(
@@ -205,6 +207,15 @@ class PublicSiteTests(TestCase):
             response,
             'images/uganda-lake-landscape-hero-hd.jpg',
         )
+        self.assertContains(
+            response,
+            'images/page-heroes/safari-hero.jpg',
+        )
+        self.assertContains(response, 'property="og:image"')
+        self.assertContains(
+            response,
+            'name="twitter:card" content="summary_large_image"',
+        )
         self.assertContains(response, 'css/site-motion.css')
         self.assertContains(response, 'js/site-motion.js')
         self.assertContains(response, 'class="scroll-progress"')
@@ -212,18 +223,47 @@ class PublicSiteTests(TestCase):
         self.assertNotContains(response, "images.unsplash.com")
         self.assertContains(response, 'class="is-active" aria-current="page"')
 
-    def test_domestic_listing_hero_uses_local_uganda_image(self):
+    def test_page_heroes_use_local_uganda_images(self):
         stylesheet_path = finders.find("css/site.css")
 
         self.assertIsNotNone(stylesheet_path)
         stylesheet = Path(stylesheet_path).read_text(encoding="utf-8")
-        self.assertIn(
-            '../images/uganda-lake-landscape-hero-hd.jpg',
-            stylesheet,
+        expected_images = [
+            "../images/uganda-lake-landscape-hero-hd.jpg",
+            "../images/page-heroes/about-hero.jpg",
+            "../images/page-heroes/gallery-hero.jpg",
+            "../images/page-heroes/safari-hero.jpg",
+        ]
+
+        for image_path in expected_images:
+            with self.subTest(image_path=image_path):
+                self.assertIn(image_path, stylesheet)
+
+        self.assertNotIn("images.unsplash.com", stylesheet)
+
+    def test_cloudinary_image_urls_are_optimized(self):
+        image = SimpleNamespace(
+            url=(
+                "https://res.cloudinary.com/iuscby6h/image/upload/"
+                "v1/media/tours/example"
+            ),
         )
-        self.assertNotIn(
-            "images.unsplash.com/photo-1501854140801-50d01698950b",
-            stylesheet,
+
+        self.assertEqual(
+            optimized_image_url(image, 800),
+            (
+                "https://res.cloudinary.com/iuscby6h/image/upload/"
+                "c_limit,w_800/f_auto/q_auto/"
+                "v1/media/tours/example"
+            ),
+        )
+
+    def test_non_cloudinary_image_urls_are_unchanged(self):
+        image = SimpleNamespace(url="/media/tours/example.jpg")
+
+        self.assertEqual(
+            optimized_image_url(image, 800),
+            "/media/tours/example.jpg",
         )
 
     def test_site_wide_motion_controls_render_on_public_pages(self):

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load image_urls %}
 
 {% block title %}Uganda Travel Gallery | Shafnet Tours{% endblock %}
 {% block meta_description %}Explore travel photographs and moments from Shafnet Tours experiences across Uganda.{% endblock %}
@@ -17,14 +18,15 @@
         {% if images %}
             <div class="gallery-grid">
                 {% for image in images %}
+                    {% with thumbnail_url=image.image|optimized_image_url:'800' full_url=image.image|optimized_image_url:'1800' %}
                     <figure
                         class="gallery-card"
                         data-gallery-item
-                        data-gallery-src="{{ image.image.url }}"
+                        data-gallery-src="{{ full_url }}"
                         data-gallery-title="{{ image.title|default:'Uganda travel experience' }}"
                         data-gallery-caption="{{ image.caption|default:'' }}"
                     >
-                        <img src="{{ image.image.url }}" alt="{{ image.title|default:image.caption|default:'Uganda travel experience' }}" loading="lazy">
+                        <img src="{{ thumbnail_url }}" alt="{{ image.title|default:image.caption|default:'Uganda travel experience' }}" loading="lazy" decoding="async">
                         <button class="gallery-open" type="button" data-gallery-open aria-label="Open {{ image.title|default:'travel image' }}">
                             <span aria-hidden="true">＋</span>
                             View image
@@ -36,6 +38,7 @@
                             </figcaption>
                         {% endif %}
                     </figure>
+                    {% endwith %}
                 {% endfor %}
             </div>
         {% else %}

@@ -13,7 +13,16 @@
     <meta property="og:title" content="{% block og_title %}Shafnet Tours & Travel Ltd{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Discover carefully planned Uganda tours, safaris and local getaways.{% endblock %}">
     <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
-    {% block og_image %}{% endblock %}
+    {% block og_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}">
+    <meta property="og:image:alt" content="Uganda lake landscape with islands and green hills">
+    {% endblock %}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Shafnet Tours & Travel Ltd{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Discover carefully planned Uganda tours, safaris and local getaways.{% endblock %}">
+    {% block twitter_image %}
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}">
+    {% endblock %}
     <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
     <title>{% block title %}Shafnet Tours & Travel Ltd{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/site.css' %}">

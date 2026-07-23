@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static image_urls %}
 
 {% block title %}Shafnet Tours | Uganda Tours & Safaris{% endblock %}
 {% block meta_description %}Explore Uganda through professionally planned domestic tours, wildlife safaris and custom travel experiences with Shafnet Tours.{% endblock %}
@@ -10,17 +10,17 @@
         <span
             class="hero-slide hero-slide-1"
             data-hero-slide
-            {% if safari_tours.0.image %}style="--hero-image: url('{{ safari_tours.0.image.url }}');"{% endif %}
+            style="--hero-image: url('{% if safari_tours.0.image %}{{ safari_tours.0.image|optimized_image_url:'1600' }}{% else %}{% static 'images/page-heroes/safari-hero.jpg' %}{% endif %}');"
         ></span>
         <span
             class="hero-slide hero-slide-2"
             data-hero-slide
-            {% if domestic_tours.0.image %}style="--hero-image: url('{{ domestic_tours.0.image.url }}');"{% endif %}
+            style="--hero-image: url('{% if domestic_tours.0.image %}{{ domestic_tours.0.image|optimized_image_url:'1600' }}{% else %}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}{% endif %}');"
         ></span>
         <span
             class="hero-slide hero-slide-3"
             data-hero-slide
-            style="--hero-image: url('{% if destinations.0.image %}{{ destinations.0.image.url }}{% else %}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}{% endif %}');"
+            style="--hero-image: url('{% if destinations.0.image %}{{ destinations.0.image|optimized_image_url:'1600' }}{% else %}{% static 'images/page-heroes/about-hero.jpg' %}{% endif %}');"
         ></span>
     </div>
     <div class="container hero-inner">
@@ -103,7 +103,7 @@
                 <article class="tour-card">
                     <div class="card-image-wrap">
                         {% if tour.image %}
-                            <img src="{{ tour.image.url }}" alt="{{ tour.title }}" loading="lazy">
+                            <img src="{{ tour.image|optimized_image_url:'800' }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
                         {% else %}
                             <div class="image-placeholder"><span>Uganda getaway</span></div>
                         {% endif %}
@@ -145,7 +145,7 @@
                 <article class="tour-card">
                     <div class="card-image-wrap">
                         {% if tour.image %}
-                            <img src="{{ tour.image.url }}" alt="{{ tour.title }}" loading="lazy">
+                            <img src="{{ tour.image|optimized_image_url:'800' }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
                         {% else %}
                             <div class="image-placeholder safari-placeholder"><span>Uganda safari</span></div>
                         {% endif %}
@@ -202,7 +202,7 @@
             {% for destination in destinations %}
                 <article class="destination-card">
                     {% if destination.image %}
-                        <img src="{{ destination.image.url }}" alt="{{ destination.name }}" loading="lazy">
+                        <img src="{{ destination.image|optimized_image_url:'800' }}" alt="{{ destination.name }}" loading="lazy" decoding="async">
                     {% else %}
                         <div class="destination-placeholder"></div>
                     {% endif %}
