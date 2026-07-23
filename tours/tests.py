@@ -1,5 +1,7 @@
 from datetime import timedelta
+from pathlib import Path
 
+from django.contrib.staticfiles import finders
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -199,12 +201,30 @@ class PublicSiteTests(TestCase):
         )
         self.assertContains(response, 'data-hero-toggle')
         self.assertContains(response, 'class="hero-scroll-cue"')
+        self.assertContains(
+            response,
+            'images/uganda-lake-landscape-hero-hd.jpg',
+        )
         self.assertContains(response, 'css/site-motion.css')
         self.assertContains(response, 'js/site-motion.js')
         self.assertContains(response, 'class="scroll-progress"')
         self.assertContains(response, 'data-back-to-top')
         self.assertNotContains(response, "images.unsplash.com")
         self.assertContains(response, 'class="is-active" aria-current="page"')
+
+    def test_domestic_listing_hero_uses_local_uganda_image(self):
+        stylesheet_path = finders.find("css/site.css")
+
+        self.assertIsNotNone(stylesheet_path)
+        stylesheet = Path(stylesheet_path).read_text(encoding="utf-8")
+        self.assertIn(
+            '../images/uganda-lake-landscape-hero-hd.jpg',
+            stylesheet,
+        )
+        self.assertNotIn(
+            "images.unsplash.com/photo-1501854140801-50d01698950b",
+            stylesheet,
+        )
 
     def test_site_wide_motion_controls_render_on_public_pages(self):
         urls = [

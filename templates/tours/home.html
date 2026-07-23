@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Shafnet Tours | Uganda Tours & Safaris{% endblock %}
 {% block meta_description %}Explore Uganda through professionally planned domestic tours, wildlife safaris and custom travel experiences with Shafnet Tours.{% endblock %}
@@ -19,7 +20,7 @@
         <span
             class="hero-slide hero-slide-3"
             data-hero-slide
-            {% if destinations.0.image %}style="--hero-image: url('{{ destinations.0.image.url }}');"{% endif %}
+            style="--hero-image: url('{% if destinations.0.image %}{{ destinations.0.image.url }}{% else %}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}{% endif %}');"
         ></span>
     </div>
     <div class="container hero-inner">
