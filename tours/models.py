@@ -79,10 +79,18 @@ class Tour(models.Model):
     )
     image = models.ImageField(upload_to="tours/", blank=True, null=True)
     is_featured = models.BooleanField(default=False)
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Inactive tours are hidden from listings, search engines and detail pages.",
+    )
+    display_order = models.PositiveIntegerField(
+        default=0,
+        help_text="Lower numbers appear first within each catalogue.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["display_order", "title"]
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -292,6 +300,11 @@ class CompanyCredential(models.Model):
     description = models.CharField(max_length=240, blank=True)
     verification_url = models.URLField(
         help_text="Public page where a traveller can verify this credential.",
+    )
+    valid_until = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Optional expiry or renewal date shown on the credential.",
     )
     logo = models.ImageField(
         upload_to="credentials/",

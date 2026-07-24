@@ -404,6 +404,7 @@ class PublicSiteTests(TestCase):
             identifier="REG-2026-001",
             description="Current public operator record.",
             verification_url="https://registry.example.com/shafnet",
+            valid_until=timezone.localdate() + timedelta(days=365),
             is_active=True,
         )
         TeamMember.objects.create(
@@ -430,6 +431,7 @@ class PublicSiteTests(TestCase):
         home_response = self.client.get(reverse("home"))
         self.assertContains(home_response, "Credentials you can verify")
         self.assertContains(home_response, "REG-2026-001")
+        self.assertContains(home_response, "Valid until")
         self.assertContains(home_response, "Source checked")
         self.assertContains(home_response, "View on Example Reviews")
         self.assertContains(home_response, "★★★★☆")
@@ -445,6 +447,12 @@ class PublicSiteTests(TestCase):
             name="Inactive credential",
             verification_url="https://registry.example.com/inactive",
             is_active=False,
+        )
+        CompanyCredential.objects.create(
+            name="Expired credential",
+            verification_url="https://registry.example.com/expired",
+            valid_until=timezone.localdate() - timedelta(days=1),
+            is_active=True,
         )
         TeamMember.objects.create(
             name="Inactive profile",
@@ -471,6 +479,7 @@ class PublicSiteTests(TestCase):
 
         home_response = self.client.get(reverse("home"))
         self.assertNotContains(home_response, "Inactive credential")
+        self.assertNotContains(home_response, "Expired credential")
         self.assertNotContains(home_response, "Unverified reviewer")
         self.assertNotContains(home_response, "Missing source reviewer")
         self.assertNotContains(home_response, "Credentials you can verify")
@@ -488,6 +497,64 @@ class PublicSiteTests(TestCase):
 
         with self.assertRaises(ValidationError):
             testimonial.full_clean()
+
+    def test_expanded_safari_catalogue_has_complete_itineraries(self):
+        expected_days = {
+            "3-day-kibale-chimpanzee-experience": 3,
+            "5-day-kidepo-valley-wilderness-safari": 5,
+            "5-day-gorilla-and-queen-elizabeth-safari": 5,
+            "7-day-western-uganda-wildlife-and-primates": 7,
+            "10-day-uganda-grand-safari": 10,
+        }
+
+        for slug, day_count in expected_days.items():
+            with self.subTest(slug=slug):
+                tour = Tour.objects.get(slug=slug)
+                self.assertTrue(tour.is_active)
+                self.assertEqual(tour.target_audience, "international")
+                self.assertEqual(tour.itineraries.count(), day_count)
+                self.assertTrue(tour.inclusions)
+                self.assertTrue(tour.exclusions)
+
+    def test_catalogue_filters_and_sorting(self):
+        response = self.client.get(
+            reverse("safaris"),
+            {"region": "northern", "duration": "4-6"},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "5-Day Kidepo Valley Wilderness Safari")
+        self.assertNotContains(response, self.safari_tour.title)
+        self.assertTrue(response.context["filters_applied"])
+
+        longest_response = self.client.get(
+            reverse("safaris"),
+            {"sort": "longest"},
+        )
+        longest_tours = list(longest_response.context["tours"])
+        self.assertEqual(longest_tours[0].slug, "10-day-uganda-grand-safari")
+
+    def test_inactive_tour_is_hidden_from_public_pages_and_sitemap(self):
+        inactive_tour = Tour.objects.create(
+            title="Unpublished Safari Draft",
+            description="This draft must remain private.",
+            duration_days=4,
+            location="Uganda",
+            target_audience="international",
+            is_active=False,
+        )
+
+        listing_response = self.client.get(reverse("safaris"))
+        self.assertNotContains(listing_response, inactive_tour.title)
+
+        detail_response = self.client.get(inactive_tour.get_absolute_url())
+        self.assertEqual(detail_response.status_code, 404)
+
+        sitemap_response = self.client.get("/sitemap.xml")
+        self.assertNotContains(
+            sitemap_response,
+            inactive_tour.get_absolute_url(),
+        )
 
     def test_sitemap_and_robots_are_available(self):
         sitemap_response = self.client.get("/sitemap.xml")

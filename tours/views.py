@@ -3,8 +3,10 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import EmailMessage, send_mail
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from .forms import BookingForm, ContactForm
 from .models import (
@@ -19,6 +21,13 @@ from .models import (
 
 
 logger = logging.getLogger(__name__)
+
+
+def _active_credentials():
+    today = timezone.localdate()
+    return CompanyCredential.objects.filter(is_active=True).filter(
+        Q(valid_until__isnull=True) | Q(valid_until__gte=today)
+    )
 
 
 def _send_booking_emails(booking):
@@ -130,10 +139,12 @@ def home(request):
         "domestic_tours": Tour.objects.filter(
             target_audience="domestic",
             is_featured=True,
+            is_active=True,
         )[:3],
         "safari_tours": Tour.objects.filter(
             target_audience="international",
             is_featured=True,
+            is_active=True,
         )[:3],
         "destinations": Destination.objects.filter(is_active=True)[:4],
         "testimonials": (
@@ -141,14 +152,64 @@ def home(request):
             .exclude(source_name="")
             .exclude(source_url="")[:3]
         ),
-        "credentials": CompanyCredential.objects.filter(is_active=True)[:4],
+        "credentials": _active_credentials()[:4],
     }
     return render(request, "tours/home.html", context)
 
 
+def _catalogue_context(request, target_audience):
+    tours = Tour.objects.filter(
+        target_audience=target_audience,
+        is_active=True,
+    )
+    total_tours = tours.count()
+
+    selected_region = request.GET.get("region", "").strip()
+    valid_regions = {value for value, _label in Tour.REGION_CHOICES}
+    if selected_region in valid_regions:
+        tours = tours.filter(region=selected_region)
+    else:
+        selected_region = ""
+
+    selected_duration = request.GET.get("duration", "").strip()
+    duration_filters = {
+        "1-3": {"duration_days__lte": 3},
+        "4-6": {
+            "duration_days__gte": 4,
+            "duration_days__lte": 6,
+        },
+        "7+": {"duration_days__gte": 7},
+    }
+    if selected_duration in duration_filters:
+        tours = tours.filter(**duration_filters[selected_duration])
+    else:
+        selected_duration = ""
+
+    selected_sort = request.GET.get("sort", "recommended").strip()
+    sort_options = {
+        "recommended": ("display_order", "title"),
+        "shortest": ("duration_days", "display_order", "title"),
+        "longest": ("-duration_days", "display_order", "title"),
+        "newest": ("-created_at", "title"),
+    }
+    if selected_sort not in sort_options:
+        selected_sort = "recommended"
+    tours = tours.order_by(*sort_options[selected_sort])
+
+    return {
+        "tours": tours,
+        "total_tours": total_tours,
+        "selected_region": selected_region,
+        "selected_duration": selected_duration,
+        "selected_sort": selected_sort,
+        "region_choices": Tour.REGION_CHOICES,
+        "filters_applied": bool(selected_region or selected_duration),
+    }
+
+
 def domestic_tours(request):
     context = {
-        "tours": Tour.objects.filter(target_audience="domestic"),
+        **_catalogue_context(request, "domestic"),
         "page_type": "domestic",
         "page_label": "Explore Uganda locally",
         "page_title": "Domestic tours for refreshing escapes",
@@ -162,7 +223,7 @@ def domestic_tours(request):
 
 def safaris(request):
     context = {
-        "tours": Tour.objects.filter(target_audience="international"),
+        **_catalogue_context(request, "international"),
         "page_type": "safari",
         "page_label": "Discover the Pearl of Africa",
         "page_title": "Uganda safaris shaped around you",
@@ -180,7 +241,7 @@ def about(request):
         "tours/about.html",
         {
             "team_members": TeamMember.objects.filter(is_active=True),
-            "credentials": CompanyCredential.objects.filter(is_active=True),
+            "credentials": _active_credentials(),
         },
     )
 
@@ -233,6 +294,7 @@ def tour_detail(request, slug):
     tour = get_object_or_404(
         Tour.objects.prefetch_related("itineraries"),
         slug=slug,
+        is_active=True,
     )
 
     if request.method == "POST":

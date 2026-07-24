@@ -92,7 +92,9 @@ class TourAdmin(admin.ModelAdmin):
         "currency",
         "price_basis",
         "price_is_from",
+        "display_order",
         "is_featured",
+        "is_active",
     )
     list_filter = (
         "target_audience",
@@ -101,10 +103,12 @@ class TourAdmin(admin.ModelAdmin):
         "price_is_from",
         "region",
         "is_featured",
+        "is_active",
     )
     search_fields = ("title", "description", "location")
     prepopulated_fields = {"slug": ("title",)}
-    list_editable = ("is_featured",)
+    list_editable = ("display_order", "is_featured", "is_active")
+    ordering = ("target_audience", "display_order", "title")
     list_per_page = 30
     fieldsets = (
         ("Tour details", {"fields": ("title", "slug", "description", "image")}),
@@ -123,7 +127,10 @@ class TourAdmin(admin.ModelAdmin):
                 "description": "Enter one item per line. These appear as structured lists on the public tour page.",
             },
         ),
-        ("Visibility", {"fields": ("is_featured",)}),
+        (
+            "Visibility",
+            {"fields": (("display_order", "is_featured", "is_active"),)},
+        ),
     )
     inlines = [ItineraryInline]
 
@@ -424,10 +431,11 @@ class CompanyCredentialAdmin(admin.ModelAdmin):
         "name",
         "issuer",
         "identifier",
+        "valid_until",
         "order",
         "is_active",
     )
-    list_filter = ("issuer", "is_active")
+    list_filter = ("issuer", "is_active", "valid_until")
     list_editable = ("order", "is_active")
     search_fields = ("name", "issuer", "identifier", "description")
     ordering = ("order", "name")
@@ -440,6 +448,7 @@ class CompanyCredentialAdmin(admin.ModelAdmin):
                     "identifier",
                     "description",
                     "verification_url",
+                    "valid_until",
                     "logo",
                 ),
                 "description": (

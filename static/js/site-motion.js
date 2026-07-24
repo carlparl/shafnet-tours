@@ -207,6 +207,7 @@
             ".listing-switcher-inner",
             ".section-heading",
             ".listing-heading",
+            ".catalogue-filters",
             ".journey-steps-heading",
             ".journey-steps-grid article",
             ".tour-card",

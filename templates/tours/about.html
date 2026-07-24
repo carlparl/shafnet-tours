@@ -116,6 +116,7 @@
                         <p>{{ credential.issuer|default:"Verified company record" }}</p>
                         <h3>{{ credential.name }}</h3>
                         {% if credential.identifier %}<span>{{ credential.identifier }}</span>{% endif %}
+                        {% if credential.valid_until %}<span>Valid until {{ credential.valid_until|date:"j F Y" }}</span>{% endif %}
                         {% if credential.description %}<small>{{ credential.description }}</small>{% endif %}
                     </div>
                     <a href="{{ credential.verification_url }}" target="_blank" rel="noopener noreferrer">

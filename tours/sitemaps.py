@@ -35,4 +35,4 @@ class TourSitemap(Sitemap):
     priority = 0.9
 
     def items(self):
-        return Tour.objects.all()
+        return Tour.objects.filter(is_active=True)
