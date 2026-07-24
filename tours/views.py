@@ -7,7 +7,15 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import BookingForm, ContactForm
-from .models import Booking, Destination, GalleryImage, Testimonial, Tour
+from .models import (
+    Booking,
+    CompanyCredential,
+    Destination,
+    GalleryImage,
+    TeamMember,
+    Testimonial,
+    Tour,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -128,7 +136,12 @@ def home(request):
             is_featured=True,
         )[:3],
         "destinations": Destination.objects.filter(is_active=True)[:4],
-        "testimonials": Testimonial.objects.filter(is_active=True)[:3],
+        "testimonials": (
+            Testimonial.objects.filter(is_active=True, is_verified=True)
+            .exclude(source_name="")
+            .exclude(source_url="")[:3]
+        ),
+        "credentials": CompanyCredential.objects.filter(is_active=True)[:4],
     }
     return render(request, "tours/home.html", context)
 
@@ -162,7 +175,14 @@ def safaris(request):
 
 
 def about(request):
-    return render(request, "tours/about.html")
+    return render(
+        request,
+        "tours/about.html",
+        {
+            "team_members": TeamMember.objects.filter(is_active=True),
+            "credentials": CompanyCredential.objects.filter(is_active=True),
+        },
+    )
 
 
 def gallery(request):

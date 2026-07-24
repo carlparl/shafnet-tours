@@ -8,10 +8,12 @@ from django.utils.html import format_html
 
 from .models import (
     Booking,
+    CompanyCredential,
     ContactMessage,
     Destination,
     GalleryImage,
     Itinerary,
+    TeamMember,
     Testimonial,
     Tour,
 )
@@ -346,10 +348,108 @@ class BookingAdmin(admin.ModelAdmin):
 
 @admin.register(Testimonial)
 class TestimonialAdmin(admin.ModelAdmin):
-    list_display = ("name", "location", "rating", "is_active", "created_at")
-    list_filter = ("rating", "is_active")
-    search_fields = ("name", "location", "message")
-    list_editable = ("rating", "is_active")
+    list_display = (
+        "name",
+        "location",
+        "rating",
+        "source_name",
+        "is_verified",
+        "is_active",
+        "created_at",
+    )
+    list_filter = ("rating", "source_name", "is_verified", "is_active")
+    search_fields = (
+        "name",
+        "location",
+        "message",
+        "tour_name",
+        "source_name",
+    )
+    list_editable = ("is_verified", "is_active")
+    fieldsets = (
+        (
+            "Guest review",
+            {
+                "fields": (
+                    ("name", "location"),
+                    "message",
+                    "rating",
+                    ("tour_name", "travel_date"),
+                )
+            },
+        ),
+        (
+            "Verification",
+            {
+                "fields": (
+                    ("source_name", "source_url"),
+                    ("is_verified", "is_active"),
+                ),
+                "description": (
+                    "Only mark a review as verified after checking its public "
+                    "source. Verified, active reviews appear on the homepage."
+                ),
+            },
+        ),
+    )
+
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(admin.ModelAdmin):
+    list_display = ("name", "role", "languages", "order", "is_active")
+    list_filter = ("is_active",)
+    list_editable = ("order", "is_active")
+    search_fields = ("name", "role", "bio", "qualifications", "languages")
+    ordering = ("order", "name")
+    fieldsets = (
+        (
+            "Profile",
+            {
+                "fields": (
+                    ("name", "role"),
+                    "photo",
+                    "bio",
+                    "qualifications",
+                    "languages",
+                )
+            },
+        ),
+        ("Visibility", {"fields": (("order", "is_active"),)}),
+    )
+
+
+@admin.register(CompanyCredential)
+class CompanyCredentialAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "issuer",
+        "identifier",
+        "order",
+        "is_active",
+    )
+    list_filter = ("issuer", "is_active")
+    list_editable = ("order", "is_active")
+    search_fields = ("name", "issuer", "identifier", "description")
+    ordering = ("order", "name")
+    fieldsets = (
+        (
+            "Verified credential",
+            {
+                "fields": (
+                    ("name", "issuer"),
+                    "identifier",
+                    "description",
+                    "verification_url",
+                    "logo",
+                ),
+                "description": (
+                    "Add only licences, registrations and memberships that "
+                    "Shafnet currently holds and travellers can verify."
+                ),
+            },
+        ),
+        ("Visibility", {"fields": (("order", "is_active"),)}),
+    )
 
 
 @admin.register(Destination)

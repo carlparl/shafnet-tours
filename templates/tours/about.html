@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static image_urls %}
 
 {% block title %}About Shafnet Tours | Uganda Travel Specialists{% endblock %}
 {% block meta_description %}Learn how Shafnet Tours plans domestic getaways and Uganda safari experiences with attentive service and local knowledge.{% endblock %}
@@ -12,6 +12,48 @@
         <p>We help local and international travellers shape clear, comfortable journeys around the places they want to experience.</p>
     </div>
 </section>
+
+{% if team_members %}
+<section class="section" aria-labelledby="team-title">
+    <div class="container">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">Meet your hosts</p>
+                <h2 id="team-title">The people behind your journey</h2>
+                <p>Get to know the Uganda-based specialists responsible for planning and supporting your trip.</p>
+            </div>
+        </div>
+        <div class="team-grid">
+            {% for member in team_members %}
+                <article class="team-card">
+                    <div class="team-photo">
+                        {% if member.photo %}
+                            <img src="{{ member.photo|optimized_image_url:'700' }}" alt="{{ member.name }}, {{ member.role }} at Shafnet Tours" loading="lazy" decoding="async">
+                        {% else %}
+                            <span aria-hidden="true">{{ member.name|first }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="team-card-copy">
+                        <p>{{ member.role }}</p>
+                        <h3>{{ member.name }}</h3>
+                        <div class="team-bio">{{ member.bio|linebreaksbr }}</div>
+                        {% if member.qualifications or member.languages %}
+                            <dl class="team-facts">
+                                {% if member.qualifications %}
+                                    <div><dt>Qualifications</dt><dd>{{ member.qualifications }}</dd></div>
+                                {% endif %}
+                                {% if member.languages %}
+                                    <div><dt>Languages</dt><dd>{{ member.languages }}</dd></div>
+                                {% endif %}
+                            </dl>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <section class="section">
     <div class="container about-intro-grid">
@@ -49,6 +91,43 @@
         </div>
     </div>
 </section>
+
+{% if credentials %}
+<section class="section section-soft" aria-labelledby="about-credentials-title">
+    <div class="container">
+        <div class="section-heading centered credibility-heading">
+            <div>
+                <p class="eyebrow">Verified company details</p>
+                <h2 id="about-credentials-title">Check our credentials directly</h2>
+                <p>Each active record links to a public source so travellers can confirm it independently.</p>
+            </div>
+        </div>
+        <div class="credential-grid">
+            {% for credential in credentials %}
+                <article class="credential-card">
+                    <div class="credential-icon">
+                        {% if credential.logo %}
+                            <img src="{{ credential.logo|optimized_image_url:'400' }}" alt="{{ credential.name }} logo" loading="lazy" decoding="async">
+                        {% else %}
+                            <span aria-hidden="true">✓</span>
+                        {% endif %}
+                    </div>
+                    <div class="credential-copy">
+                        <p>{{ credential.issuer|default:"Verified company record" }}</p>
+                        <h3>{{ credential.name }}</h3>
+                        {% if credential.identifier %}<span>{{ credential.identifier }}</span>{% endif %}
+                        {% if credential.description %}<small>{{ credential.description }}</small>{% endif %}
+                    </div>
+                    <a href="{{ credential.verification_url }}" target="_blank" rel="noopener noreferrer">
+                        Verify record <span aria-hidden="true">↗</span>
+                        <span class="sr-only"> for {{ credential.name }}</span>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <section class="section">
     <div class="container">

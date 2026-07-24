@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.urls import reverse
 from django.utils.text import slugify
 
@@ -194,7 +194,36 @@ class Testimonial(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=100, blank=True)
     message = models.TextField()
-    rating = models.IntegerField(default=5)
+    rating = models.IntegerField(
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    tour_name = models.CharField(
+        max_length=180,
+        blank=True,
+        help_text="Optional trip or itinerary connected to this review.",
+    )
+    travel_date = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Optional month or date of travel.",
+    )
+    source_name = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="For example: Google, Tripadvisor or SafariBookings.",
+    )
+    source_url = models.URLField(
+        blank=True,
+        help_text="Link to the original public review.",
+    )
+    is_verified = models.BooleanField(
+        default=False,
+        help_text=(
+            "Enable only after checking that the source link belongs to this "
+            "review. Only verified reviews appear on the website."
+        ),
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -203,6 +232,86 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.rating} stars"
+
+    @property
+    def rating_stars(self):
+        return "★" * self.rating
+
+    @property
+    def rating_empty_stars(self):
+        return "☆" * (5 - self.rating)
+
+
+class TeamMember(models.Model):
+    name = models.CharField(max_length=120)
+    role = models.CharField(max_length=120)
+    bio = models.TextField()
+    photo = models.ImageField(
+        upload_to="team/",
+        blank=True,
+        null=True,
+    )
+    qualifications = models.CharField(
+        max_length=240,
+        blank=True,
+        help_text="Only include qualifications that can be supported.",
+    )
+    languages = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="For example: English, Luganda and Runyankole.",
+    )
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(
+        default=False,
+        help_text="Activate when the profile and photo are approved.",
+    )
+
+    class Meta:
+        ordering = ["order", "name"]
+
+    def __str__(self):
+        return f"{self.name} - {self.role}"
+
+
+class CompanyCredential(models.Model):
+    name = models.CharField(
+        max_length=150,
+        help_text="For example: Uganda Tourism Board operator licence.",
+    )
+    issuer = models.CharField(
+        max_length=150,
+        blank=True,
+        help_text="Organisation that issued or maintains the credential.",
+    )
+    identifier = models.CharField(
+        max_length=120,
+        blank=True,
+        help_text="Licence or membership number, if it is public.",
+    )
+    description = models.CharField(max_length=240, blank=True)
+    verification_url = models.URLField(
+        help_text="Public page where a traveller can verify this credential.",
+    )
+    logo = models.ImageField(
+        upload_to="credentials/",
+        blank=True,
+        null=True,
+    )
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(
+        default=False,
+        help_text=(
+            "Activate only after the name, number and verification link have "
+            "been checked."
+        ),
+    )
+
+    class Meta:
+        ordering = ["order", "name"]
+
+    def __str__(self):
+        return self.name
 
 
 class Destination(models.Model):

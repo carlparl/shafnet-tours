@@ -3,12 +3,21 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from django.contrib.staticfiles import finders
+from django.core.exceptions import ValidationError
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Booking, ContactMessage, GalleryImage, Tour
+from .models import (
+    Booking,
+    CompanyCredential,
+    ContactMessage,
+    GalleryImage,
+    TeamMember,
+    Testimonial,
+    Tour,
+)
 from .templatetags.image_urls import optimized_image_url
 
 
@@ -387,6 +396,98 @@ class PublicSiteTests(TestCase):
             response,
             "Your ideal safari can start here",
         )
+
+    def test_verified_credibility_content_renders_from_admin_records(self):
+        CompanyCredential.objects.create(
+            name="Tour Operator Registration",
+            issuer="Example Tourism Registry",
+            identifier="REG-2026-001",
+            description="Current public operator record.",
+            verification_url="https://registry.example.com/shafnet",
+            is_active=True,
+        )
+        TeamMember.objects.create(
+            name="Amina Guide",
+            role="Safari planner",
+            bio="Plans considered Uganda journeys for local and international guests.",
+            qualifications="Certified destination specialist",
+            languages="English and Luganda",
+            is_active=True,
+        )
+        Testimonial.objects.create(
+            name="Daniel Traveller",
+            location="Nairobi, Kenya",
+            message="The route was clear and the support was responsive.",
+            rating=4,
+            tour_name="Western Uganda Safari",
+            travel_date=timezone.localdate(),
+            source_name="Example Reviews",
+            source_url="https://reviews.example.com/shafnet/daniel",
+            is_verified=True,
+            is_active=True,
+        )
+
+        home_response = self.client.get(reverse("home"))
+        self.assertContains(home_response, "Credentials you can verify")
+        self.assertContains(home_response, "REG-2026-001")
+        self.assertContains(home_response, "Source checked")
+        self.assertContains(home_response, "View on Example Reviews")
+        self.assertContains(home_response, "★★★★☆")
+
+        about_response = self.client.get(reverse("about"))
+        self.assertContains(about_response, "The people behind your journey")
+        self.assertContains(about_response, "Amina Guide")
+        self.assertContains(about_response, "Certified destination specialist")
+        self.assertContains(about_response, "Check our credentials directly")
+
+    def test_unverified_or_inactive_credibility_content_stays_hidden(self):
+        CompanyCredential.objects.create(
+            name="Inactive credential",
+            verification_url="https://registry.example.com/inactive",
+            is_active=False,
+        )
+        TeamMember.objects.create(
+            name="Inactive profile",
+            role="Planner",
+            bio="This profile is not approved for publication.",
+            is_active=False,
+        )
+        Testimonial.objects.create(
+            name="Unverified reviewer",
+            message="This review has not been source checked.",
+            rating=5,
+            source_name="Example Reviews",
+            source_url="https://reviews.example.com/unverified",
+            is_verified=False,
+            is_active=True,
+        )
+        Testimonial.objects.create(
+            name="Missing source reviewer",
+            message="This verified flag lacks a public source.",
+            rating=5,
+            is_verified=True,
+            is_active=True,
+        )
+
+        home_response = self.client.get(reverse("home"))
+        self.assertNotContains(home_response, "Inactive credential")
+        self.assertNotContains(home_response, "Unverified reviewer")
+        self.assertNotContains(home_response, "Missing source reviewer")
+        self.assertNotContains(home_response, "Credentials you can verify")
+
+        about_response = self.client.get(reverse("about"))
+        self.assertNotContains(about_response, "Inactive profile")
+        self.assertNotContains(about_response, "Check our credentials directly")
+
+    def test_testimonial_rating_must_be_between_one_and_five(self):
+        testimonial = Testimonial(
+            name="Invalid rating",
+            message="A rating outside the public scale should be rejected.",
+            rating=6,
+        )
+
+        with self.assertRaises(ValidationError):
+            testimonial.full_clean()
 
     def test_sitemap_and_robots_are_available(self):
         sitemap_response = self.client.get("/sitemap.xml")

@@ -59,6 +59,43 @@
     </div>
 </section>
 
+{% if credentials %}
+<section class="section credibility-section" aria-labelledby="homepage-credentials-title">
+    <div class="container">
+        <div class="section-heading credibility-heading">
+            <div>
+                <p class="eyebrow">Travel with confidence</p>
+                <h2 id="homepage-credentials-title">Credentials you can verify</h2>
+                <p>Current registrations and professional memberships, linked to their public records.</p>
+            </div>
+        </div>
+        <div class="credential-grid">
+            {% for credential in credentials %}
+                <article class="credential-card">
+                    <div class="credential-icon">
+                        {% if credential.logo %}
+                            <img src="{{ credential.logo|optimized_image_url:'400' }}" alt="{{ credential.name }} logo" loading="lazy" decoding="async">
+                        {% else %}
+                            <span aria-hidden="true">✓</span>
+                        {% endif %}
+                    </div>
+                    <div class="credential-copy">
+                        <p>{{ credential.issuer|default:"Verified company record" }}</p>
+                        <h3>{{ credential.name }}</h3>
+                        {% if credential.identifier %}<span>{{ credential.identifier }}</span>{% endif %}
+                        {% if credential.description %}<small>{{ credential.description }}</small>{% endif %}
+                    </div>
+                    <a href="{{ credential.verification_url }}" target="_blank" rel="noopener noreferrer">
+                        Verify record <span aria-hidden="true">↗</span>
+                        <span class="sr-only"> for {{ credential.name }}</span>
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <section class="section journey-steps-section" aria-labelledby="journey-steps-title">
     <div class="container">
         <div class="journey-steps-heading">
@@ -223,9 +260,22 @@
         <div class="testimonial-grid">
             {% for testimonial in testimonials %}
                 <figure>
-                    <div class="stars" aria-label="{{ testimonial.rating }} out of 5 stars">★★★★★</div>
+                    <div class="review-proof">
+                        <span class="verified-review-badge"><span aria-hidden="true">✓</span> Source checked</span>
+                        <a href="{{ testimonial.source_url }}" target="_blank" rel="noopener noreferrer">
+                            View on {{ testimonial.source_name }} <span aria-hidden="true">↗</span>
+                        </a>
+                    </div>
+                    <div class="stars" aria-label="{{ testimonial.rating }} out of 5 stars">
+                        <span aria-hidden="true">{{ testimonial.rating_stars }}{{ testimonial.rating_empty_stars }}</span>
+                    </div>
                     <blockquote>“{{ testimonial.message }}”</blockquote>
-                    <figcaption><strong>{{ testimonial.name }}</strong>{% if testimonial.location %}<span>{{ testimonial.location }}</span>{% endif %}</figcaption>
+                    <figcaption>
+                        <strong>{{ testimonial.name }}</strong>
+                        {% if testimonial.location %}<span>{{ testimonial.location }}</span>{% endif %}
+                        {% if testimonial.tour_name %}<span>{{ testimonial.tour_name }}</span>{% endif %}
+                        {% if testimonial.travel_date %}<span>Travelled {{ testimonial.travel_date|date:"F Y" }}</span>{% endif %}
+                    </figcaption>
                 </figure>
             {% endfor %}
         </div>

@@ -348,6 +348,8 @@
 }
 
 .value-card,
+.credential-card,
+.team-card,
 .journey-steps-grid article,
 .feature-grid article,
 .package-card,
@@ -368,6 +370,10 @@
 
 .value-card:hover,
 .value-card:focus-within,
+.credential-card:hover,
+.credential-card:focus-within,
+.team-card:hover,
+.team-card:focus-within,
 .journey-steps-grid article:hover,
 .feature-grid article:hover,
 .package-card:hover,
@@ -409,6 +415,30 @@
 .contact-method:focus-visible .contact-icon {
     box-shadow: 0 10px 24px rgba(21, 128, 61, 0.18);
     transform: rotate(-4deg) scale(1.06);
+}
+
+.team-photo img {
+    transition:
+        transform 820ms var(--motion-ease-out),
+        filter 420ms ease;
+}
+
+.team-card:hover .team-photo img,
+.team-card:focus-within .team-photo img {
+    filter: saturate(1.04) contrast(1.02);
+    transform: scale(1.04);
+}
+
+.credential-icon {
+    transition:
+        transform 360ms var(--motion-ease-out),
+        box-shadow 300ms ease;
+}
+
+.credential-card:hover .credential-icon,
+.credential-card:focus-within .credential-icon {
+    box-shadow: 0 10px 24px rgba(21, 128, 61, 0.16);
+    transform: translateY(-2px) rotate(-2deg);
 }
 
 .about-image-note {

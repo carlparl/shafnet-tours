@@ -213,6 +213,8 @@
             ".destination-card",
             ".feature-grid article",
             ".testimonial-grid figure",
+            ".credential-card",
+            ".team-card",
             ".value-card",
             ".gallery-card",
             ".about-copy",
