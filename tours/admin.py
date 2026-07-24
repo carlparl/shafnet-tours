@@ -1,8 +1,14 @@
 import logging
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import admin, messages
+from django.contrib.admin.models import LogEntry
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.shortcuts import render
+from django.urls import path
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.html import format_html
 
@@ -480,12 +486,52 @@ class DestinationAdmin(admin.ModelAdmin):
 
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "email", "subject", "created_at")
-    list_filter = (("created_at", admin.DateFieldListFilter),)
+    list_display = (
+        "message_status",
+        "full_name",
+        "email",
+        "subject",
+        "created_at",
+    )
+    list_filter = ("is_read", ("created_at", admin.DateFieldListFilter))
     search_fields = ("full_name", "email", "subject", "message")
-    readonly_fields = ("full_name", "email", "subject", "message", "created_at")
+    readonly_fields = (
+        "full_name",
+        "email",
+        "subject",
+        "message",
+        "created_at",
+        "read_at",
+    )
     date_hierarchy = "created_at"
     ordering = ("-created_at",)
+    actions = ("mark_as_read", "mark_as_unread")
+
+    @admin.display(description="Status", ordering="is_read")
+    def message_status(self, obj):
+        if obj.is_read:
+            return format_html(
+                '<span class="admin-status admin-status-read">Read</span>'
+            )
+        return format_html(
+            '<span class="admin-status admin-status-unread">Unread</span>'
+        )
+
+    @admin.action(description="Mark selected messages as read")
+    def mark_as_read(self, request, queryset):
+        updated = queryset.filter(is_read=False).update(
+            is_read=True,
+            read_at=timezone.now(),
+        )
+        self.message_user(request, f"{updated} message(s) marked as read.")
+
+    @admin.action(description="Mark selected messages as unread")
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.filter(is_read=True).update(
+            is_read=False,
+            read_at=None,
+        )
+        self.message_user(request, f"{updated} message(s) marked as unread.")
 
     def has_add_permission(self, request):
         return False
@@ -501,3 +547,92 @@ class GalleryImageAdmin(admin.ModelAdmin):
 admin.site.site_header = "Shafnet Tours Administration"
 admin.site.site_title = "Shafnet Admin"
 admin.site.index_title = "Tour and booking management"
+admin.site.index_template = "admin/index.html"
+
+
+_default_admin_index = admin.site.index
+
+
+def shafnet_admin_index(request, extra_context=None):
+    """Supply the admin landing page with live, permission-safe operations data."""
+    today = timezone.localdate()
+    recent_cutoff = timezone.now() - timedelta(days=7)
+
+    context = {
+        "dashboard": {
+            "recent_booking_count": Booking.objects.filter(
+                created_at__gte=recent_cutoff
+            ).count(),
+            "unread_message_count": ContactMessage.objects.filter(
+                is_read=False
+            ).count(),
+            "active_tour_count": Tour.objects.filter(is_active=True).count(),
+            "pending_review_count": Testimonial.objects.filter(
+                is_verified=False
+            ).count(),
+            "recent_bookings": Booking.objects.select_related("tour").order_by(
+                "-created_at"
+            )[:8],
+            "recent_actions": LogEntry.objects.select_related(
+                "content_type", "user"
+            ).order_by("-action_time")[:5],
+            "today": today,
+        },
+        "dashboard_urls": {
+            "bookings": reverse("admin:tours_booking_changelist"),
+            "booking_add": reverse("admin:tours_booking_add"),
+            "messages": reverse("admin:tours_contactmessage_changelist"),
+            "tours": reverse("admin:tours_tour_changelist"),
+            "tour_add": reverse("admin:tours_tour_add"),
+            "destinations": reverse("admin:tours_destination_changelist"),
+            "destination_add": reverse("admin:tours_destination_add"),
+            "gallery": reverse("admin:tours_galleryimage_changelist"),
+            "gallery_add": reverse("admin:tours_galleryimage_add"),
+            "reviews": reverse("admin:tours_testimonial_changelist"),
+            "team": reverse("admin:tours_teammember_changelist"),
+        },
+    }
+    if extra_context:
+        context.update(extra_context)
+    return _default_admin_index(request, extra_context=context)
+
+
+admin.site.index = shafnet_admin_index
+
+
+def shafnet_admin_activity(request):
+    """Dedicated, paginated audit view for staff activity."""
+    entries = LogEntry.objects.select_related(
+        "content_type", "user"
+    ).order_by("-action_time")
+    action = request.GET.get("action", "")
+    if action in {"add", "change", "delete"}:
+        action_flags = {"add": 1, "change": 2, "delete": 3}
+        entries = entries.filter(action_flag=action_flags[action])
+
+    paginator = Paginator(entries, 25)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    context = {
+        **admin.site.each_context(request),
+        "title": "Activity",
+        "page_obj": page_obj,
+        "selected_action": action,
+    }
+    return render(request, "admin/activity.html", context)
+
+
+_default_admin_urls = admin.site.get_urls
+
+
+def shafnet_admin_urls():
+    custom_urls = [
+        path(
+            "activity/",
+            admin.site.admin_view(shafnet_admin_activity),
+            name="activity",
+        ),
+    ]
+    return custom_urls + _default_admin_urls()
+
+
+admin.site.get_urls = shafnet_admin_urls

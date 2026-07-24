@@ -1,0 +1,108 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block bodyclass %}{{ block.super }} dashboard shafnet-dashboard{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-shell">
+  <aside class="dashboard-sidebar" aria-label="Administration">
+    <p class="sidebar-label">Workspace</p>
+    <a class="active" href="{% url 'admin:index' %}"><svg><use href="#icon-overview"/></svg><span>Overview</span></a>
+    <a href="{% url 'admin:activity' %}"><svg><use href="#icon-activity"/></svg><span>Activity</span></a>
+    <a href="{{ dashboard_urls.bookings }}"><svg><use href="#icon-bookings"/></svg><span>Bookings</span></a>
+    <a href="{{ dashboard_urls.tours }}"><svg><use href="#icon-tours"/></svg><span>Tour Packages</span></a>
+    <a href="{{ dashboard_urls.messages }}"><svg><use href="#icon-messages"/></svg><span>Messages</span></a>
+    <a href="{{ dashboard_urls.destinations }}"><svg><use href="#icon-destinations"/></svg><span>Destinations</span></a>
+    <a href="{{ dashboard_urls.gallery }}"><svg><use href="#icon-gallery"/></svg><span>Gallery</span></a>
+    <a href="{{ dashboard_urls.reviews }}"><svg><use href="#icon-reviews"/></svg><span>Reviews</span></a>
+    <a href="{{ dashboard_urls.team }}"><svg><use href="#icon-team"/></svg><span>Team</span></a>
+    {% if perms.auth.view_user %}
+      <p class="sidebar-label sidebar-secondary">System</p>
+      <a href="{% url 'admin:auth_user_changelist' %}"><svg><use href="#icon-settings"/></svg><span>Users &amp; access</span></a>
+    {% endif %}
+  </aside>
+
+  <main class="dashboard-main">
+    <header class="dashboard-heading">
+      <div>
+        <p class="eyebrow">Shafnet operations</p>
+        <h1>Dashboard Overview</h1>
+        <p>Tour and booking management</p>
+      </div>
+      {% if perms.tours.add_booking %}
+        <a class="primary-action action-with-icon" href="{{ dashboard_urls.booking_add }}"><svg><use href="#icon-plus"/></svg>New booking</a>
+      {% endif %}
+    </header>
+
+    <section class="metric-grid" aria-label="Operations summary">
+      <a class="metric-card" href="{{ dashboard_urls.bookings }}">
+        <span class="metric-icon"><svg><use href="#icon-bookings"/></svg></span><span>New bookings <small>Last 7 days</small></span>
+        <strong>{{ dashboard.recent_booking_count }}</strong>
+      </a>
+      <a class="metric-card" href="{{ dashboard_urls.messages }}">
+        <span class="metric-icon"><svg><use href="#icon-messages"/></svg></span><span>Unread messages <small>Requires attention</small></span>
+        <strong>{{ dashboard.unread_message_count }}</strong>
+      </a>
+      <a class="metric-card" href="{{ dashboard_urls.tours }}">
+        <span class="metric-icon"><svg><use href="#icon-destinations"/></svg></span><span>Active tours <small>Published packages</small></span>
+        <strong>{{ dashboard.active_tour_count }}</strong>
+      </a>
+      <a class="metric-card metric-warning" href="{{ dashboard_urls.reviews }}?is_verified__exact=0">
+        <span class="metric-icon"><svg><use href="#icon-reviews"/></svg></span><span>Reviews to verify <small>Awaiting checks</small></span>
+        <strong>{{ dashboard.pending_review_count }}</strong>
+      </a>
+    </section>
+
+    <div class="dashboard-columns">
+      <section class="dashboard-panel bookings-panel">
+        <div class="panel-heading">
+          <div><h2>Recent bookings</h2><p>Latest customer requests</p></div>
+          <a href="{{ dashboard_urls.bookings }}">View all →</a>
+        </div>
+        <div class="table-scroll">
+          <table class="booking-table">
+            <thead><tr><th>Guest</th><th>Tour package</th><th>Travel date</th><th>Status</th><th>Advertised price</th><th></th></tr></thead>
+            <tbody>
+            {% for booking in dashboard.recent_bookings %}
+              <tr>
+                <td><strong>{{ booking.full_name }}</strong><small>{{ booking.email }}</small></td>
+                <td>{{ booking.tour.title }}</td>
+                <td>{{ booking.preferred_date|date:"d M Y"|default:"Not selected" }}</td>
+                <td><span class="status status-{{ booking.status }}">{{ booking.get_status_display }}</span></td>
+                <td>{{ booking.tour.price_summary }}</td>
+                <td><a class="row-action" aria-label="Open booking" href="{% url 'admin:tours_booking_change' booking.pk %}">•••</a></td>
+              </tr>
+            {% empty %}
+              <tr><td class="empty-state" colspan="6">No booking requests yet.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside class="dashboard-rail">
+        <section class="dashboard-panel">
+          <div class="panel-heading"><div><h2>Recent activity</h2><p>Latest administrator changes</p></div><a href="{% url 'admin:activity' %}">View all →</a></div>
+          <ul class="activity-list">
+          {% for entry in dashboard.recent_actions %}
+            <li><span class="activity-dot"></span><div><strong>{{ entry|capfirst }}</strong><small>{{ entry.user.get_username }} · {{ entry.action_time|timesince }} ago</small></div></li>
+          {% empty %}
+            <li class="empty-state">No administrator activity yet.</li>
+          {% endfor %}
+          </ul>
+        </section>
+
+        <section class="dashboard-panel quick-actions">
+          <div class="panel-heading"><div><h2>Quick actions</h2></div></div>
+          {% if perms.tours.add_tour %}<a href="{{ dashboard_urls.tour_add }}"><span class="action-with-icon"><svg><use href="#icon-tours"/></svg>Add tour package</span><span>→</span></a>{% endif %}
+          {% if perms.tours.add_destination %}<a href="{{ dashboard_urls.destination_add }}"><span class="action-with-icon"><svg><use href="#icon-destinations"/></svg>Add destination</span><span>→</span></a>{% endif %}
+          {% if perms.tours.add_galleryimage %}<a href="{{ dashboard_urls.gallery_add }}"><span class="action-with-icon"><svg><use href="#icon-gallery"/></svg>Upload image</span><span>→</span></a>{% endif %}
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}

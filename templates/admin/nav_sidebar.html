@@ -1,0 +1,22 @@
+{% load i18n %}
+<nav class="sticky shafnet-global-sidebar" id="nav-sidebar" aria-label="{% translate 'Administration navigation' %}">
+  <p class="sidebar-label">Workspace</p>
+  <a href="{% url 'admin:index' %}"{% if request.path == "/admin/" %} class="active"{% endif %}><svg><use href="#icon-overview"/></svg><span>Overview</span></a>
+  <a href="{% url 'admin:activity' %}"{% if "/admin/activity/" in request.path %} class="active"{% endif %}><svg><use href="#icon-activity"/></svg><span>Activity</span></a>
+  {% if perms.tours.view_booking %}<a href="{% url 'admin:tours_booking_changelist' %}"{% if "/admin/tours/booking/" in request.path %} class="active"{% endif %}><svg><use href="#icon-bookings"/></svg><span>Bookings</span></a>{% endif %}
+  {% if perms.tours.view_tour %}<a href="{% url 'admin:tours_tour_changelist' %}"{% if "/admin/tours/tour/" in request.path %} class="active"{% endif %}><svg><use href="#icon-tours"/></svg><span>Tour Packages</span></a>{% endif %}
+  {% if perms.tours.view_contactmessage %}<a href="{% url 'admin:tours_contactmessage_changelist' %}"{% if "/admin/tours/contactmessage/" in request.path %} class="active"{% endif %}><svg><use href="#icon-messages"/></svg><span>Messages</span></a>{% endif %}
+  {% if perms.tours.view_destination %}<a href="{% url 'admin:tours_destination_changelist' %}"{% if "/admin/tours/destination/" in request.path %} class="active"{% endif %}><svg><use href="#icon-destinations"/></svg><span>Destinations</span></a>{% endif %}
+  {% if perms.tours.view_galleryimage %}<a href="{% url 'admin:tours_galleryimage_changelist' %}"{% if "/admin/tours/galleryimage/" in request.path %} class="active"{% endif %}><svg><use href="#icon-gallery"/></svg><span>Gallery</span></a>{% endif %}
+  {% if perms.tours.view_testimonial %}<a href="{% url 'admin:tours_testimonial_changelist' %}"{% if "/admin/tours/testimonial/" in request.path %} class="active"{% endif %}><svg><use href="#icon-reviews"/></svg><span>Reviews</span></a>{% endif %}
+  {% if perms.tours.view_teammember %}<a href="{% url 'admin:tours_teammember_changelist' %}"{% if "/admin/tours/teammember/" in request.path %} class="active"{% endif %}><svg><use href="#icon-team"/></svg><span>Team</span></a>{% endif %}
+
+  <p class="sidebar-label sidebar-secondary">Business</p>
+  {% if perms.tours.view_companycredential %}<a href="{% url 'admin:tours_companycredential_changelist' %}"><svg><use href="#icon-credentials"/></svg><span>Credentials</span></a>{% endif %}
+
+  {% if perms.auth.view_user or perms.auth.view_group %}
+    <p class="sidebar-label sidebar-secondary">System</p>
+    {% if perms.auth.view_user %}<a href="{% url 'admin:auth_user_changelist' %}"><svg><use href="#icon-team"/></svg><span>Users</span></a>{% endif %}
+    {% if perms.auth.view_group %}<a href="{% url 'admin:auth_group_changelist' %}"><svg><use href="#icon-settings"/></svg><span>Permission groups</span></a>{% endif %}
+  {% endif %}
+</nav>

@@ -3,6 +3,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from django.contrib.staticfiles import finders
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core import mail
 from django.test import TestCase, override_settings
@@ -194,7 +195,6 @@ class PublicSiteTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(ContactMessage.objects.count(), 0)
         self.assertEqual(len(mail.outbox), 0)
-
 
     def test_homepage_title_and_motion_markup_are_valid(self):
         response = self.client.get(reverse("home"))
@@ -755,3 +755,72 @@ class PublicSiteTests(TestCase):
         self.assertEqual(robots_response.status_code, 200)
         self.assertContains(robots_response, "Sitemap:")
         self.assertContains(robots_response, "/sitemap.xml")
+
+
+class AdminDashboardTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin_user = get_user_model().objects.create_superuser(
+            username="dashboard-admin",
+            email="admin@example.com",
+            password="test-password-only",
+        )
+        cls.tour = Tour.objects.create(
+            title="Dashboard Safari",
+            description="Test package",
+            price=950,
+            currency="USD",
+            duration_days=3,
+            location="Western Uganda",
+            is_active=True,
+        )
+        cls.booking = Booking.objects.create(
+            tour=cls.tour,
+            full_name="Dashboard Guest",
+            email="guest@example.com",
+            phone="+256700000000",
+            preferred_date=timezone.localdate() + timedelta(days=14),
+        )
+        ContactMessage.objects.create(
+            full_name="Message Guest",
+            email="message@example.com",
+            subject="Safari question",
+            message="Please share details.",
+        )
+        Testimonial.objects.create(
+            name="Review Guest",
+            message="A review waiting for verification.",
+            is_verified=False,
+        )
+
+    def setUp(self):
+        self.client.force_login(self.admin_user)
+
+    def test_dashboard_renders_live_operations_data(self):
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Dashboard Overview")
+        self.assertContains(response, "Dashboard Guest")
+        self.assertContains(response, "Dashboard Safari")
+        self.assertContains(response, "Reviews to verify")
+        self.assertContains(response, "USD 950 per person")
+        self.assertContains(response, "shafnet-admin")
+
+    def test_dashboard_requires_staff_access(self):
+        self.client.logout()
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertRedirects(
+            response,
+            f"{reverse('admin:login')}?next={reverse('admin:index')}",
+        )
+
+    def test_activity_has_a_dedicated_staff_page(self):
+        response = self.client.get(reverse("admin:activity"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Audit log")
+        self.assertContains(response, "All activity")
+        self.assertContains(response, "Created")
+        self.assertNotContains(response, "Recent bookings")

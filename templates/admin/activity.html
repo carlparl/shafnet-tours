@@ -1,0 +1,58 @@
+{% extends "admin/base_site.html" %}
+
+{% block bodyclass %}{{ block.super }} shafnet-activity-page{% endblock %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">Dashboard</a><span>›</span>Activity
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="content-main" class="activity-workspace">
+  <header class="admin-page-heading">
+    <div>
+      <p class="eyebrow">Audit log</p>
+      <h1>Activity</h1>
+      <p>Administrator changes made across Shafnet Tours.</p>
+    </div>
+  </header>
+
+  <nav class="activity-filters" aria-label="Filter activity">
+    <a href="{% url 'admin:activity' %}"{% if not selected_action %} class="active"{% endif %}>All activity</a>
+    <a href="?action=add"{% if selected_action == "add" %} class="active"{% endif %}>Created</a>
+    <a href="?action=change"{% if selected_action == "change" %} class="active"{% endif %}>Updated</a>
+    <a href="?action=delete"{% if selected_action == "delete" %} class="active"{% endif %}>Deleted</a>
+  </nav>
+
+  <section class="activity-table-card">
+    <table class="activity-table">
+      <thead><tr><th>Action</th><th>Record</th><th>Section</th><th>Administrator</th><th>Date and time</th></tr></thead>
+      <tbody>
+      {% for entry in page_obj %}
+        <tr>
+          <td>
+            {% if entry.is_addition %}<span class="activity-type created">Created</span>
+            {% elif entry.is_change %}<span class="activity-type updated">Updated</span>
+            {% elif entry.is_deletion %}<span class="activity-type deleted">Deleted</span>{% endif %}
+          </td>
+          <td><strong>{{ entry.object_repr }}</strong>{% if entry.change_message %}<small>{{ entry.get_change_message }}</small>{% endif %}</td>
+          <td>{{ entry.content_type.name|capfirst|default:"System" }}</td>
+          <td>{{ entry.user.get_username }}</td>
+          <td>{{ entry.action_time|date:"d M Y, H:i" }}<small>{{ entry.action_time|timesince }} ago</small></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="empty-state">No activity matches this filter.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+  <nav class="activity-pagination" aria-label="Activity pages">
+    {% if page_obj.has_previous %}<a href="?action={{ selected_action }}&page={{ page_obj.previous_page_number }}">← Previous</a>{% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?action={{ selected_action }}&page={{ page_obj.next_page_number }}">Next →</a>{% endif %}
+  </nav>
+  {% endif %}
+</div>
+{% endblock %}

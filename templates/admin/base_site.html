@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | Shafnet Admin{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/shafnet-admin.css' %}">
+{% endblock %}
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'js/shafnet-admin.js' %}" defer></script>
+{% endblock %}
+
+{% block branding %}
+  <div class="shafnet-brand">
+    <div>
+      <strong>Shafnet Tours</strong>
+      <span>Administration</span>
+    </div>
+  </div>
+  <svg class="shafnet-icon-sprite" aria-hidden="true">
+    <symbol id="icon-overview" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="icon-activity" viewBox="0 0 24 24"><path d="M4 4v5h5M20 20v-5h-5"/><path d="M5.6 15.5A7 7 0 0 0 18.8 17M18.4 8.5A7 7 0 0 0 5.2 7"/></symbol>
+    <symbol id="icon-bookings" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M8 3v4m8-4v4M4 10h16m-12 4h3m2 0h3m-8 4h3"/></symbol>
+    <symbol id="icon-tours" viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="icon-messages" viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 4Zm4 4h8m-8 4h5"/></symbol>
+    <symbol id="icon-destinations" viewBox="0 0 24 24"><path d="M12 22s7-6.1 7-13a7 7 0 1 0-14 0c0 6.9 7 13 7 13Z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+    <symbol id="icon-gallery" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m4 17 5-5 4 4 2-2 5 4"/></symbol>
+    <symbol id="icon-reviews" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9Z"/></symbol>
+    <symbol id="icon-team" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2"/><path d="M3 20v-2a6 6 0 0 1 12 0v2m1-5a4 4 0 0 1 5 4v1"/></symbol>
+    <symbol id="icon-credentials" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8 8 9 4.6-1 8-4 8-9V6Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 13.5v-3l-2-.7-.8-1.9.9-1.9L15 3.9l-1.9.9L11.2 4l-.7-2h-3l-.7 2-1.9.8-1.9-.9L.9 6l.9 1.9L1 9.8l-2 .7v3l2 .7.8 1.9-.9 1.9L3 20.1l1.9-.9 1.9.8.7 2h3l.7-2 1.9-.8 1.9.9 2.1-2.1-.9-1.9.8-1.9Z" transform="translate(3) scale(.75)"/></symbol>
+    <symbol id="icon-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  </svg>
+{% endblock %}
+
+{% block usertools %}
+  {% if has_permission %}
+  <div id="user-tools" class="shafnet-user-tools">
+    <button type="button" class="sidebar-control" data-sidebar-toggle aria-expanded="true" aria-label="Collapse workspace navigation">
+      <span aria-hidden="true">☰</span><span class="sidebar-control-label">Workspace</span>
+    </button>
+    <a href="/" class="header-action">View website</a>
+    <a href="{% url 'admin:password_change' %}" class="header-action">Password</a>
+    <span class="admin-identity">{{ user.get_username }}</span>
+    <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+      {% csrf_token %}<button type="submit" class="header-action logout-action">Log out</button>
+    </form>
+  </div>
+  {% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
