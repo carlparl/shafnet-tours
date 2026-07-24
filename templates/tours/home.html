@@ -138,10 +138,11 @@
 
         <div class="card-grid">
             {% for tour in domestic_tours %}
+                {% tour_image_url tour 800 as tour_image_src %}
                 <article class="tour-card">
                     <div class="card-image-wrap">
-                        {% if tour.image %}
-                            <img src="{{ tour.image|optimized_image_url:'800' }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
+                        {% if tour_image_src %}
+                            <img src="{{ tour_image_src }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
                         {% else %}
                             <div class="image-placeholder"><span>Uganda getaway</span></div>
                         {% endif %}
@@ -185,10 +186,11 @@
 
         <div class="card-grid">
             {% for tour in safari_tours %}
+                {% tour_image_url tour 800 as tour_image_src %}
                 <article class="tour-card">
                     <div class="card-image-wrap">
-                        {% if tour.image %}
-                            <img src="{{ tour.image|optimized_image_url:'800' }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
+                        {% if tour_image_src %}
+                            <img src="{{ tour_image_src }}" alt="{{ tour.title }}" loading="lazy" decoding="async">
                         {% else %}
                             <div class="image-placeholder safari-placeholder"><span>Uganda safari</span></div>
                         {% endif %}

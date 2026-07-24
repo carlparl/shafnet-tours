@@ -18,7 +18,10 @@ from .models import (
     Testimonial,
     Tour,
 )
-from .templatetags.image_urls import optimized_image_url
+from .templatetags.image_urls import (
+    optimized_image_url,
+    tour_image_url,
+)
 
 
 @override_settings(
@@ -81,6 +84,7 @@ class PublicSiteTests(TestCase):
             reverse("privacy_policy"),
             reverse("terms_and_conditions"),
             reverse("booking_policy"),
+            reverse("image_credits"),
             reverse("tour_detail", args=[self.safari_tour.slug]),
         ]
 
@@ -275,6 +279,75 @@ class PublicSiteTests(TestCase):
             "/media/tours/example.jpg",
         )
 
+    def test_curated_tour_fallback_images_are_available(self):
+        expected_images = {
+            "3-day-kibale-chimpanzee-experience": (
+                "images/tours/kibale-chimpanzee.jpg"
+            ),
+            "5-day-gorilla-and-queen-elizabeth-safari": (
+                "images/tours/bwindi-gorillas.jpg"
+            ),
+            "5-day-kidepo-valley-wilderness-safari": (
+                "images/tours/kidepo-valley.jpg"
+            ),
+            "7-day-western-uganda-wildlife-and-primates": (
+                "images/tours/western-uganda-hippos.jpg"
+            ),
+            "10-day-uganda-grand-safari": (
+                "images/tours/lake-mburo-zebras.jpg"
+            ),
+        }
+
+        for slug, static_path in expected_images.items():
+            with self.subTest(slug=slug):
+                tour = Tour.objects.get(slug=slug)
+                tour.image = ""
+                self.assertEqual(
+                    tour_image_url(tour, 800),
+                    f"/static/{static_path}",
+                )
+                self.assertIsNotNone(finders.find(static_path))
+
+    def test_catalogue_fallbacks_and_image_credits_render(self):
+        listing_response = self.client.get(reverse("safaris"))
+        self.assertContains(
+            listing_response,
+            "/static/images/tours/kibale-chimpanzee.jpg",
+        )
+        self.assertContains(
+            listing_response,
+            "/static/images/tours/kidepo-valley.jpg",
+        )
+        self.assertContains(
+            listing_response,
+            "/static/images/tours/bwindi-gorillas.jpg",
+        )
+
+        tour = Tour.objects.get(
+            slug="3-day-kibale-chimpanzee-experience",
+        )
+        detail_response = self.client.get(tour.get_absolute_url())
+        self.assertContains(
+            detail_response,
+            "/static/images/tours/kibale-chimpanzee.jpg",
+        )
+        self.assertContains(
+            detail_response,
+            (
+                'property="og:image" '
+                'content="http://testserver/static/images/tours/'
+                'kibale-chimpanzee.jpg"'
+            ),
+        )
+
+        credits_response = self.client.get(reverse("image_credits"))
+        self.assertEqual(credits_response.status_code, 200)
+        self.assertContains(credits_response, "flowcomm")
+        self.assertContains(credits_response, "Thomas Fuhrmann")
+        self.assertContains(credits_response, "Sandra Aceng")
+        self.assertContains(credits_response, "Alvinategyeka")
+        self.assertContains(credits_response, "Yakov Fedorov")
+
     def test_site_wide_motion_controls_render_on_public_pages(self):
         urls = [
             reverse("home"),
@@ -286,6 +359,7 @@ class PublicSiteTests(TestCase):
             reverse("privacy_policy"),
             reverse("terms_and_conditions"),
             reverse("booking_policy"),
+            reverse("image_credits"),
             reverse("tour_detail", args=[self.safari_tour.slug]),
         ]
 
@@ -645,6 +719,7 @@ class PublicSiteTests(TestCase):
         self.assertContains(sitemap_response, reverse("about"))
         self.assertContains(sitemap_response, reverse("gallery"))
         self.assertContains(sitemap_response, reverse("contact"))
+        self.assertContains(sitemap_response, reverse("image_credits"))
 
         robots_response = self.client.get(reverse("robots_txt"))
         self.assertEqual(robots_response.status_code, 200)

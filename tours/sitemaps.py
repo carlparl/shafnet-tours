@@ -15,6 +15,7 @@ class StaticViewSitemap(Sitemap):
         ("booking_policy", "yearly", 0.4),
         ("terms_and_conditions", "yearly", 0.3),
         ("privacy_policy", "yearly", 0.3),
+        ("image_credits", "yearly", 0.2),
     )
 
     def items(self):

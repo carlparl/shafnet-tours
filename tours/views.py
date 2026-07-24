@@ -315,6 +315,10 @@ def booking_policy(request):
     return render(request, "tours/booking_policy.html")
 
 
+def image_credits(request):
+    return render(request, "tours/image_credits.html")
+
+
 def tour_detail(request, slug):
     if slug in LEGACY_TOUR_SLUGS:
         return redirect(

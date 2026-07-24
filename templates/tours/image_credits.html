@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Image Credits | Shafnet Tours{% endblock %}
+{% block meta_description %}Credits and licence details for selected Uganda safari photographs used by Shafnet Tours & Travel Ltd.{% endblock %}
+{% block og_title %}Image Credits | Shafnet Tours{% endblock %}
+{% block og_description %}Sources, creators and licences for selected photographs used in the Shafnet tour catalogue.{% endblock %}
+
+{% block content %}
+<header class="policy-hero">
+    <div class="container policy-hero-inner">
+        <nav class="breadcrumbs policy-breadcrumbs" aria-label="Breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span>Image Credits</span>
+        </nav>
+        <p class="eyebrow eyebrow-light">Responsible publishing</p>
+        <h1>Image Credits</h1>
+        <p>Sources, creators and licences for selected photographs used in the Shafnet tour catalogue.</p>
+    </div>
+</header>
+
+<section class="policy-section">
+    <div class="container policy-layout">
+        <aside class="policy-nav" aria-label="Image credits navigation">
+            <strong>On this page</strong>
+            <a href="#kibale">Kibale chimpanzee</a>
+            <a href="#bwindi">Bwindi gorillas</a>
+            <a href="#kidepo">Kidepo landscape</a>
+            <a href="#lake-mburo">Lake Mburo zebra</a>
+            <a href="#hippos">Queen Elizabeth hippo</a>
+        </aside>
+
+        <article class="policy-content">
+            <div class="policy-intro-card">
+                <strong>How these images are used</strong>
+                <p>The listed photographs have been cropped, resized and compressed for consistent web presentation. No animals, locations or documentary details were generated or materially altered.</p>
+            </div>
+
+            <section id="kibale">
+                <span class="policy-number">01</span>
+                <h2>Kibale chimpanzee</h2>
+                <p><a href="https://commons.wikimedia.org/wiki/File:Chimpanzee,_Kibale_National_Park,_Uganda_(52938010099).jpg" target="_blank" rel="noopener noreferrer">“Chimpanzee, Kibale National Park, Uganda”</a> by flowcomm, used under the <a href="https://creativecommons.org/licenses/by/2.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution 2.0 licence</a>.</p>
+            </section>
+
+            <section id="bwindi">
+                <span class="policy-number">02</span>
+                <h2>Bwindi gorillas</h2>
+                <p><a href="https://commons.wikimedia.org/wiki/File:Mountain_gorilla_(Gorilla_beringei_beringei)_in_Bwindi_Impenetrable_04.jpg" target="_blank" rel="noopener noreferrer">“Mountain gorilla in Bwindi Impenetrable”</a> by Thomas Fuhrmann, used under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution-ShareAlike 4.0 licence</a>.</p>
+            </section>
+
+            <section id="kidepo">
+                <span class="policy-number">03</span>
+                <h2>Kidepo landscape</h2>
+                <p><a href="https://commons.wikimedia.org/wiki/File:Landscape_of_Kidepo_Valley_National_Park_in_Uganda.jpg" target="_blank" rel="noopener noreferrer">“Landscape of Kidepo Valley National Park in Uganda”</a> by Sandra Aceng, used under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution-ShareAlike 4.0 licence</a>.</p>
+            </section>
+
+            <section id="lake-mburo">
+                <span class="policy-number">04</span>
+                <h2>Lake Mburo zebra</h2>
+                <p><a href="https://commons.wikimedia.org/wiki/File:Zebras_of_Lake_Mburo_National_Park_Uganda_04.jpg" target="_blank" rel="noopener noreferrer">“Zebras of Lake Mburo National Park Uganda 04”</a> by Alvinategyeka, made available under <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank" rel="noopener noreferrer">CC0 1.0 Universal</a>.</p>
+            </section>
+
+            <section id="hippos">
+                <span class="policy-number">05</span>
+                <h2>Queen Elizabeth hippo</h2>
+                <p><a href="https://commons.wikimedia.org/wiki/File:Queen_Elizabeth_National_Park._Hippo_in_Kazinga_Channel.jpg" target="_blank" rel="noopener noreferrer">“Queen Elizabeth National Park. Hippo in Kazinga Channel”</a> by Yakov Fedorov, used under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution-ShareAlike 4.0 licence</a>.</p>
+            </section>
+        </article>
+    </div>
+</section>
+{% endblock %}

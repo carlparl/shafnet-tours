@@ -7,8 +7,8 @@
 {% block og_title %}{{ tour.title }} | Shafnet Tours{% endblock %}
 {% block og_description %}Explore this {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
 {% block og_image %}
-    {% if tour.image %}
-        {% absolute_optimized_image_url tour.image 1600 as tour_og_url %}
+    {% absolute_tour_image_url tour 1600 as tour_og_url %}
+    {% if tour_og_url %}
         <meta property="og:image" content="{{ tour_og_url }}">
         <meta property="og:image:alt" content="{{ tour.title }}">
     {% else %}
@@ -19,8 +19,8 @@
 {% block twitter_title %}{{ tour.title }} | Shafnet Tours{% endblock %}
 {% block twitter_description %}Explore this {{ tour.duration_days }}-day Uganda travel experience in {{ tour.location }} with Shafnet Tours.{% endblock %}
 {% block twitter_image %}
-    {% if tour.image %}
-        {% absolute_optimized_image_url tour.image 1600 as tour_twitter_url %}
+    {% absolute_tour_image_url tour 1600 as tour_twitter_url %}
+    {% if tour_twitter_url %}
         <meta name="twitter:image" content="{{ tour_twitter_url }}">
     {% else %}
         <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/uganda-lake-landscape-hero-hd.jpg' %}">
@@ -28,6 +28,7 @@
 {% endblock %}
 
 {% block content %}
+{% tour_image_url tour 1600 as tour_image_src %}
 <section class="detail-top">
     <div class="container">
         <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -44,8 +45,8 @@
 
         <div class="detail-hero-grid">
             <div class="detail-image-wrap">
-                {% if tour.image %}
-                    <img src="{{ tour.image|optimized_image_url:'1600' }}" alt="{{ tour.title }}" decoding="async">
+                {% if tour_image_src %}
+                    <img src="{{ tour_image_src }}" alt="{{ tour.title }}" decoding="async">
                 {% else %}
                     <div class="detail-image-placeholder {% if tour.target_audience == 'international' %}safari-placeholder{% endif %}">
                         <span>{% if tour.target_audience == "domestic" %}Uganda getaway{% else %}Uganda safari{% endif %}</span>
