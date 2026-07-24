@@ -27,6 +27,15 @@ class Tour(models.Model):
         ("per_group", "Per group"),
     ]
 
+    JOURNEY_STYLE_CHOICES = [
+        ("transfer", "Transfer service"),
+        ("day_trip", "Day experience"),
+        ("short_escape", "Short escape"),
+        ("focused", "Focused safari"),
+        ("combo", "Two-park combination"),
+        ("circuit", "Multi-park circuit"),
+    ]
+
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
@@ -76,6 +85,17 @@ class Tour(models.Model):
         choices=REGION_CHOICES,
         blank=True,
         null=True,
+    )
+    journey_style = models.CharField(
+        max_length=20,
+        choices=JOURNEY_STYLE_CHOICES,
+        blank=True,
+        help_text="Explains how this package differs from similar tours.",
+    )
+    best_for = models.CharField(
+        max_length=220,
+        blank=True,
+        help_text="A factual one-sentence guide to the traveller this tour suits.",
     )
     image = models.ImageField(upload_to="tours/", blank=True, null=True)
     is_featured = models.BooleanField(default=False)

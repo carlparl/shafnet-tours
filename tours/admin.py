@@ -86,6 +86,7 @@ class TourAdmin(admin.ModelAdmin):
         "title",
         "target_audience",
         "region",
+        "journey_style",
         "location",
         "duration_days",
         "price",
@@ -102,6 +103,7 @@ class TourAdmin(admin.ModelAdmin):
         "price_basis",
         "price_is_from",
         "region",
+        "journey_style",
         "is_featured",
         "is_active",
     )
@@ -114,7 +116,14 @@ class TourAdmin(admin.ModelAdmin):
         ("Tour details", {"fields": ("title", "slug", "description", "image")}),
         (
             "Classification",
-            {"fields": (("target_audience", "region"), ("location", "duration_days"))},
+            {
+                "fields": (
+                    ("target_audience", "region"),
+                    ("journey_style", "duration_days"),
+                    "location",
+                    "best_for",
+                )
+            },
         ),
         (
             "Pricing",

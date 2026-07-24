@@ -500,6 +500,7 @@ class PublicSiteTests(TestCase):
 
     def test_expanded_safari_catalogue_has_complete_itineraries(self):
         expected_days = {
+            "3-day-bwindi-gorilla-trekking": 3,
             "3-day-kibale-chimpanzee-experience": 3,
             "5-day-kidepo-valley-wilderness-safari": 5,
             "5-day-gorilla-and-queen-elizabeth-safari": 5,
@@ -519,13 +520,25 @@ class PublicSiteTests(TestCase):
     def test_catalogue_filters_and_sorting(self):
         response = self.client.get(
             reverse("safaris"),
-            {"region": "northern", "duration": "4-6"},
+            {
+                "region": "northern",
+                "duration": "4-6",
+                "style": "focused",
+            },
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "5-Day Kidepo Valley Wilderness Safari")
         self.assertNotContains(response, self.safari_tour.title)
         self.assertTrue(response.context["filters_applied"])
+        self.assertEqual(
+            tuple(response.context["style_choices"]),
+            (
+                ("focused", "Focused safari"),
+                ("combo", "Two-park combination"),
+                ("circuit", "Multi-park circuit"),
+            ),
+        )
 
         longest_response = self.client.get(
             reverse("safaris"),
@@ -533,6 +546,72 @@ class PublicSiteTests(TestCase):
         )
         longest_tours = list(longest_response.context["tours"])
         self.assertEqual(longest_tours[0].slug, "10-day-uganda-grand-safari")
+
+        domestic_response = self.client.get(
+            reverse("domestic_tours"),
+            {"style": "focused"},
+        )
+        self.assertEqual(
+            tuple(domestic_response.context["style_choices"]),
+            (
+                ("transfer", "Transfer service"),
+                ("day_trip", "Day experience"),
+                ("short_escape", "Short escape"),
+            ),
+        )
+        self.assertEqual(domestic_response.context["selected_style"], "")
+
+    def test_safari_packages_have_distinct_public_positioning(self):
+        expected_styles = {
+            "3-day-queen-elizabeth-safari": "focused",
+            "4-day-murchison-falls-adventure": "focused",
+            "3-day-bwindi-gorilla-trekking": "focused",
+            "3-day-kibale-chimpanzee-experience": "focused",
+            "5-day-gorilla-and-queen-elizabeth-safari": "combo",
+            "5-day-kidepo-valley-wilderness-safari": "focused",
+            "7-day-western-uganda-wildlife-and-primates": "circuit",
+            "10-day-uganda-grand-safari": "circuit",
+        }
+
+        for slug, journey_style in expected_styles.items():
+            with self.subTest(slug=slug):
+                tour = Tour.objects.get(slug=slug)
+                self.assertEqual(tour.journey_style, journey_style)
+                self.assertTrue(tour.best_for)
+
+        response = self.client.get(reverse("safaris"))
+        self.assertContains(response, "Focused safari")
+        self.assertContains(response, "Two-park combination")
+        self.assertContains(response, "Multi-park circuit")
+        self.assertContains(response, "Best for:")
+
+    def test_old_bwindi_url_redirects_to_realistic_three_day_package(self):
+        response = self.client.get(
+            reverse(
+                "tour_detail",
+                kwargs={"slug": "2-day-bwindi-gorilla-trekking"},
+            )
+        )
+
+        self.assertRedirects(
+            response,
+            reverse(
+                "tour_detail",
+                kwargs={"slug": "3-day-bwindi-gorilla-trekking"},
+            ),
+            status_code=301,
+            fetch_redirect_response=False,
+        )
+
+        new_response = self.client.get(
+            reverse(
+                "tour_detail",
+                kwargs={"slug": "3-day-bwindi-gorilla-trekking"},
+            )
+        )
+        self.assertEqual(new_response.status_code, 200)
+        self.assertContains(new_response, "3-Day Bwindi Gorilla Trekking")
+        self.assertContains(new_response, "3 days")
 
     def test_inactive_tour_is_hidden_from_public_pages_and_sitemap(self):
         inactive_tour = Tour.objects.create(

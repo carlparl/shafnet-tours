@@ -45,6 +45,15 @@
                 </select>
             </div>
             <div>
+                <label for="catalogue-style">Journey style</label>
+                <select id="catalogue-style" name="style">
+                    <option value="">All journey styles</option>
+                    {% for value, label in style_choices %}
+                        <option value="{{ value }}" {% if selected_style == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
                 <label for="catalogue-sort">Sort by</label>
                 <select id="catalogue-sort" name="sort">
                     <option value="recommended" {% if selected_sort == "recommended" %}selected{% endif %}>Recommended</option>
@@ -87,7 +96,13 @@
                             </div>
                         {% endif %}
                         <span class="card-badge">
-                            {% if page_type == "domestic" %}Domestic tour{% else %}{{ tour.get_region_display|default:"Uganda safari" }}{% endif %}
+                            {% if tour.journey_style %}
+                                {{ tour.get_journey_style_display }}
+                            {% elif tour.region %}
+                                {{ tour.get_region_display }}
+                            {% else %}
+                                Uganda journey
+                            {% endif %}
                         </span>
                     </div>
                     <div class="card-body">
@@ -97,6 +112,9 @@
                         </div>
                         <h3><a href="{% url 'tour_detail' tour.slug %}">{{ tour.title }}</a></h3>
                         <p>{{ tour.description|truncatewords:25 }}</p>
+                        {% if tour.best_for %}
+                            <p class="card-best-for"><strong>Best for:</strong> {{ tour.best_for }}</p>
+                        {% endif %}
                         <div class="card-footer">
                             <strong>{{ tour.price_summary }}</strong>
                             <a href="{% url 'tour_detail' tour.slug %}">View details <span aria-hidden="true">→</span></a>

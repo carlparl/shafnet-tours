@@ -145,12 +145,17 @@
                         {% else %}
                             <div class="image-placeholder"><span>Uganda getaway</span></div>
                         {% endif %}
-                        <span class="card-badge">Domestic tour</span>
+                        <span class="card-badge">
+                            {% if tour.journey_style %}{{ tour.get_journey_style_display }}{% else %}Domestic tour{% endif %}
+                        </span>
                     </div>
                     <div class="card-body">
                         <div class="card-meta"><span>{{ tour.location }}</span><span>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</span></div>
                         <h3><a href="{% url 'tour_detail' tour.slug %}">{{ tour.title }}</a></h3>
                         <p>{{ tour.description|truncatewords:20 }}</p>
+                        {% if tour.best_for %}
+                            <p class="card-best-for"><strong>Best for:</strong> {{ tour.best_for }}</p>
+                        {% endif %}
                         <div class="card-footer">
                             <strong>{{ tour.price_summary }}</strong>
                             <a href="{% url 'tour_detail' tour.slug %}">View details <span aria-hidden="true">→</span></a>
@@ -187,12 +192,23 @@
                         {% else %}
                             <div class="image-placeholder safari-placeholder"><span>Uganda safari</span></div>
                         {% endif %}
-                        <span class="card-badge">{{ tour.get_region_display|default:"Uganda safari" }}</span>
+                        <span class="card-badge">
+                            {% if tour.journey_style %}
+                                {{ tour.get_journey_style_display }}
+                            {% elif tour.region %}
+                                {{ tour.get_region_display }}
+                            {% else %}
+                                Uganda safari
+                            {% endif %}
+                        </span>
                     </div>
                     <div class="card-body">
                         <div class="card-meta"><span>{{ tour.location }}</span><span>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</span></div>
                         <h3><a href="{% url 'tour_detail' tour.slug %}">{{ tour.title }}</a></h3>
                         <p>{{ tour.description|truncatewords:20 }}</p>
+                        {% if tour.best_for %}
+                            <p class="card-best-for"><strong>Best for:</strong> {{ tour.best_for }}</p>
+                        {% endif %}
                         <div class="card-footer">
                             <strong>{{ tour.price_summary }}</strong>
                             <a href="{% url 'tour_detail' tour.slug %}">View details <span aria-hidden="true">→</span></a>

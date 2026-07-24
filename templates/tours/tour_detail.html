@@ -56,7 +56,13 @@
             <div class="detail-summary">
                 <div>
                     <span class="detail-badge">
-                        {% if tour.target_audience == "domestic" %}Domestic tour{% else %}{{ tour.get_region_display|default:"Uganda safari" }}{% endif %}
+                        {% if tour.journey_style %}
+                            {{ tour.get_journey_style_display }}
+                        {% elif tour.region %}
+                            {{ tour.get_region_display }}
+                        {% else %}
+                            Uganda journey
+                        {% endif %}
                     </span>
                     <h1>{{ tour.title }}</h1>
                     <p class="detail-location">{{ tour.location }}</p>
@@ -88,6 +94,12 @@
                 <p class="eyebrow">Tour overview</p>
                 <h2>About this experience</h2>
                 <div class="detail-description">{{ tour.description|linebreaks }}</div>
+                {% if tour.best_for %}
+                    <div class="detail-best-for">
+                        <strong>Best suited to</strong>
+                        <span>{{ tour.best_for }}</span>
+                    </div>
+                {% endif %}
             </section>
 
             {% if tour.itineraries.all %}
@@ -177,6 +189,7 @@
                     <div><dt>Location</dt><dd>{{ tour.location }}</dd></div>
                     <div><dt>Duration</dt><dd>{{ tour.duration_days }} day{{ tour.duration_days|pluralize }}</dd></div>
                     <div><dt>Tour type</dt><dd>{% if tour.target_audience == "domestic" %}Domestic tour{% else %}International safari{% endif %}</dd></div>
+                    {% if tour.journey_style %}<div><dt>Journey style</dt><dd>{{ tour.get_journey_style_display }}</dd></div>{% endif %}
                     <div><dt>Pricing</dt><dd>{{ tour.price_summary }}</dd></div>
                     {% if tour.region %}<div><dt>Region</dt><dd>{{ tour.get_region_display }}</dd></div>{% endif %}
                 </dl>

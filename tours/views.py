@@ -22,6 +22,10 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+LEGACY_TOUR_SLUGS = {
+    "2-day-bwindi-gorilla-trekking": "3-day-bwindi-gorilla-trekking",
+}
+
 
 def _active_credentials():
     today = timezone.localdate()
@@ -185,6 +189,23 @@ def _catalogue_context(request, target_audience):
     else:
         selected_duration = ""
 
+    styles_by_audience = {
+        "domestic": {"transfer", "day_trip", "short_escape"},
+        "international": {"focused", "combo", "circuit"},
+    }
+    audience_styles = styles_by_audience.get(target_audience, set())
+    style_choices = tuple(
+        (value, label)
+        for value, label in Tour.JOURNEY_STYLE_CHOICES
+        if value in audience_styles
+    )
+    selected_style = request.GET.get("style", "").strip()
+    valid_styles = {value for value, _label in style_choices}
+    if selected_style in valid_styles:
+        tours = tours.filter(journey_style=selected_style)
+    else:
+        selected_style = ""
+
     selected_sort = request.GET.get("sort", "recommended").strip()
     sort_options = {
         "recommended": ("display_order", "title"),
@@ -201,9 +222,13 @@ def _catalogue_context(request, target_audience):
         "total_tours": total_tours,
         "selected_region": selected_region,
         "selected_duration": selected_duration,
+        "selected_style": selected_style,
         "selected_sort": selected_sort,
         "region_choices": Tour.REGION_CHOICES,
-        "filters_applied": bool(selected_region or selected_duration),
+        "style_choices": style_choices,
+        "filters_applied": bool(
+            selected_region or selected_duration or selected_style
+        ),
     }
 
 
@@ -291,6 +316,13 @@ def booking_policy(request):
 
 
 def tour_detail(request, slug):
+    if slug in LEGACY_TOUR_SLUGS:
+        return redirect(
+            "tour_detail",
+            slug=LEGACY_TOUR_SLUGS[slug],
+            permanent=True,
+        )
+
     tour = get_object_or_404(
         Tour.objects.prefetch_related("itineraries"),
         slug=slug,

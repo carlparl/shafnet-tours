@@ -466,6 +466,22 @@ a {
     line-height: 1.65;
 }
 
+.card-body > .card-best-for {
+    flex: 0;
+    margin-top: 16px;
+    border-left: 3px solid var(--green-600);
+    border-radius: 0 10px 10px 0;
+    background: var(--green-50);
+    color: #34483b;
+    padding: 11px 12px;
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.card-best-for strong {
+    color: var(--green-900);
+}
+
 .card-footer {
     display: flex;
     align-items: end;
@@ -979,7 +995,7 @@ a {
 
 .catalogue-filters {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
     align-items: end;
     gap: 14px;
     margin-bottom: 42px;
@@ -1265,6 +1281,30 @@ a {
 
 .detail-description p {
     margin: 0 0 16px;
+}
+
+.detail-best-for {
+    display: grid;
+    max-width: 780px;
+    gap: 5px;
+    margin-top: 22px;
+    border-left: 4px solid var(--green-600);
+    border-radius: 0 16px 16px 0;
+    background: var(--green-50);
+    padding: 18px 20px;
+}
+
+.detail-best-for strong {
+    color: var(--green-900);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.detail-best-for span {
+    color: #34483b;
+    font-size: 14px;
+    line-height: 1.65;
 }
 
 .itinerary-section {
