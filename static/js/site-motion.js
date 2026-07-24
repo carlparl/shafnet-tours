@@ -260,58 +260,101 @@
         const elements = Array.from(document.querySelectorAll(selector));
         if (!elements.length) return;
 
-        document.documentElement.classList.add("motion-ready");
-
         const groupedParents = new Map();
 
-        elements.forEach((element) => {
-            element.classList.add("motion-reveal");
-
-            const parent = element.parentElement;
-            const siblings = groupedParents.get(parent) || [];
-            siblings.push(element);
-            groupedParents.set(parent, siblings);
-
-            if (element.classList.contains("about-copy")) {
-                element.dataset.revealSide = "left";
-            }
-
-            if (element.classList.contains("about-image-wrap")) {
-                element.dataset.revealSide = "right";
-            }
-
-            if (
-                element.parentElement?.classList.contains("detail-hero-grid") ||
-                element.parentElement?.classList.contains("contact-grid")
-            ) {
-                element.dataset.revealSide =
-                    element === element.parentElement.firstElementChild
-                        ? "left"
-                        : "right";
-            }
-        });
-
-        groupedParents.forEach((siblings) => {
-            siblings.forEach((element, index) => {
-                element.style.setProperty("--reveal-delay", `${Math.min(index, 5) * 70}ms`);
+        const disableReveals = (error) => {
+            document.documentElement.classList.remove("motion-ready");
+            elements.forEach((element) => {
+                element.classList.remove("motion-reveal", "is-visible");
             });
-        });
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (!entry.isIntersecting) return;
-                    entry.target.classList.add("is-visible");
-                    observer.unobserve(entry.target);
-                });
-            },
-            {
-                rootMargin: "0px 0px -8% 0px",
-                threshold: 0.08
+            if (error) {
+                console.error("Motion reveals disabled after an initialization error.", error);
             }
-        );
+        };
 
-        elements.forEach((element) => observer.observe(element));
+        try {
+            elements.forEach((element) => {
+                element.classList.add("motion-reveal");
+
+                const parent = element.parentElement;
+                const siblings = groupedParents.get(parent) || [];
+                siblings.push(element);
+                groupedParents.set(parent, siblings);
+
+                if (element.classList.contains("about-copy")) {
+                    element.dataset.revealSide = "left";
+                }
+
+                if (element.classList.contains("about-image-wrap")) {
+                    element.dataset.revealSide = "right";
+                }
+
+                if (
+                    element.parentElement?.classList.contains("detail-hero-grid") ||
+                    element.parentElement?.classList.contains("contact-grid")
+                ) {
+                    element.dataset.revealSide =
+                        element === element.parentElement.firstElementChild
+                            ? "left"
+                            : "right";
+                }
+            });
+
+            groupedParents.forEach((siblings) => {
+                siblings.forEach((element, index) => {
+                    const delay = `${Math.min(index, 5) * 70}ms`;
+                    const inlineStyle = element.getAttribute("style") || "";
+                    const separator =
+                        inlineStyle && !inlineStyle.trimEnd().endsWith(";")
+                            ? ";"
+                            : "";
+
+                    element.setAttribute(
+                        "style",
+                        `${inlineStyle}${separator}--reveal-delay: ${delay};`
+                    );
+                });
+            });
+
+            const observer = new IntersectionObserver(
+                (entries) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+                        entry.target.classList.add("is-visible");
+                        observer.unobserve(entry.target);
+                    });
+                },
+                {
+                    rootMargin: "0px 0px -8% 0px",
+                    threshold: 0.08
+                }
+            );
+
+            elements.forEach((element) => observer.observe(element));
+            document.documentElement.classList.add("motion-ready");
+
+            window.setTimeout(() => {
+                const hiddenInViewport = elements.some((element) => {
+                    const bounds = element.getBoundingClientRect();
+                    const intersectsViewport =
+                        bounds.bottom > 0 && bounds.top < window.innerHeight;
+
+                    return (
+                        intersectsViewport &&
+                        !element.classList.contains("is-visible")
+                    );
+                });
+
+                if (hiddenInViewport) {
+                    disableReveals(
+                        new Error("Visible content was not released by the observer.")
+                    );
+                }
+            }, 1200);
+        } catch (error) {
+            disableReveals(error);
+        }
     };
 
     const initPolicyNavigation = () => {

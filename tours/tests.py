@@ -379,6 +379,36 @@ class PublicSiteTests(TestCase):
         self.assertContains(gallery_response, 'data-gallery-item')
         self.assertContains(gallery_response, 'data-gallery-open')
 
+    def test_motion_reveals_are_fail_safe_for_filter_form(self):
+        motion_script_path = finders.find("js/site-motion.js")
+
+        self.assertIsNotNone(motion_script_path)
+        motion_script = Path(motion_script_path).read_text(
+            encoding="utf-8",
+        )
+
+        self.assertNotIn(
+            'element.style.setProperty("--reveal-delay"',
+            motion_script,
+        )
+        self.assertIn(
+            'element.setAttribute(\n'
+            '                        "style",',
+            motion_script,
+        )
+        self.assertIn(
+            'document.documentElement.classList.remove("motion-ready")',
+            motion_script,
+        )
+        self.assertLess(
+            motion_script.index(
+                "elements.forEach((element) => observer.observe(element));"
+            ),
+            motion_script.index(
+                'document.documentElement.classList.add("motion-ready");'
+            ),
+        )
+
     def test_booking_requires_policy_consent(self):
         response = self.client.post(
             reverse("tour_detail", args=[self.safari_tour.slug]),
